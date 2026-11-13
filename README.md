@@ -27,37 +27,37 @@ The dashboard includes all 25 district rows provided by the user, independently 
 National totals: Commercial Bank **274**, BOC **672**, People's Bank **748**, combined **1,694**. The source footnote is “All Banking outlets except Student Savings Units”. It does not provide exact branch coordinates or a machine inventory. The local dataset is `assets/data/district-branch-counts.json`, including the original source citation and cell references. Moneragala is normalized internally to the map's Monaragala key; the source spelling is displayed in the comparison.
 
 - Search all districts and sort by district or any bank/combined count. The national footer stays visible while scrolling.
-- Select a national card, district name, ranked district or individual bank count to focus the reported-count map.
+- Select a national card, district name, ranked district or individual bank count to focus the individual branch-pin map.
 - Select **Locations** in a district row to browse imported branch records under its towns.
-- Choose **Map data → Individual locations** to use facility filters and published map pins. **Reported district totals** displays district aggregates with a density fill; these badges are not individual branch positions.
+- **Branch pins** is the default map, showing one marker for each source-published position. **District totals** is an explicit secondary view for 2025 aggregates. The two-button switch also appears in full-screen presentation.
 - Both map modes support **Present map**.
 
 The 2025 reference statistics and the November 2026 directory snapshot differ in date and scope. A record-count difference is not a measured coverage gap. Missing directory entries/coordinates are not converted into artificial pins, and zero imported records does not mean zero bank presence. The code validates all row sums, bank totals and geometry keys.
 
 ## Interface
 
-- Sri Lanka only: 25 locally stored district polygons, with no surrounding-country basemap.
+- Sri Lanka only: 25 local district polygons; optional OpenStreetMap streets/roads are masked outside Sri Lanka. Street tiles require an internet connection and use the browser’s normal tile caching. There is no tile prefetch or offline download feature.
 - Commercial Bank, BOC and People’s Bank individual views and multi-bank comparison.
 - Location type: branches, self-service sites, or both.
 - Published ATM, CRM, CDM, EDM and ACDM facility filters and badges.
 - District → town → location hierarchy, including multiple branches in smaller towns.
 - Search by branch, town, address and branch code; click a district to focus the map.
-- Map clusters expand to individual published locations; self-service sites use square pins.
+- Nearby pins are separate by default. **Group nearby pins** optionally clusters them; self-service sites use square pins. Select a pin for source coordinates, address, facilities and Google Maps directions. **Show on this map** zooms to street level.
 - Source links, published coordinates, address search links, data-quality notes and location details.
 - **Present map:** choose your banks, district, location type, facilities and search, then open the map full screen. The selection and current zoom are retained. A compact toolbar shows the selection and counts; **Fit view** reframes the current selection. **Exit full screen** or **Esc** restores the dashboard. Embedded browsers that deny native fullscreen use a viewport-filling presentation instead.
-- Dotted district count badges represent records without usable pins. They are district summaries, not branch coordinates.
+- Location view never places a district-centre marker for missing coordinates. The notice and directory distinguish unavailable positions from published pins.
 
 ## Source snapshot — 13 November 2026
 
 The demo generator has been replaced by **1,246 imported source records**.
 
-- **Commercial Bank:** 276 branch records and 46 additional self-service locations, 322 unique locations in total. All 322 have coordinates in the official direction links; 320 are plotted and two conflicting positions (Karapitiya and Giriulla) are withheld for review. The machine directory contains 322 site listings including branches; it does not mean 322 standalone ATMs or 322 individual machines. Source: https://www.combank.lk/branches
-- **People’s Bank:** all 331 entries returned by the supplied Branches.lk category now have source-linked positions. The directory supplies the branch identities and addresses; 328 records are enriched from the bank’s official map locator (319 matched by telephone, nine by unique branch name). Three remaining records are matched to Google Maps place listings using published contact details, including one published fax number. Two invalid official coordinates (`0,0` and an out-of-country longitude) are replaced by those independently referenced Google Maps positions. Sources: https://branches.lk/listing-cat/peoples-bank/ and https://www.peoplesbank.lk/branch-service-center/
+- **Commercial Bank:** 276 branch records and 46 additional self-service locations, 322 unique locations in total. All 322 sites are plotted. Three conflicting bank direction links (Kundasale, Giriulla and Karapitiya) were corrected against Google Maps place listings matching the official street addresses and branch phone numbers on 14 November 2026. The machine directory contains 322 site listings including branches; it does not mean 322 standalone ATMs or 322 individual machines. Source: https://www.combank.lk/branches
+- **People’s Bank:** all 331 entries returned by the supplied Branches.lk category now have source-linked positions. The directory supplies the branch identities and addresses; Initially, 328 records were enriched from the official locator and three from Google Maps place listings. A duplicate-coordinate audit on 14 November identified four incorrect official positions (Boralesgamuwa, Walasmulla, Teldeniya and Kilinochchi). These were replaced with referenced Google Maps place positions, using matching contacts where available and the branch/road identity where contacts differed. Each correction states its match evidence. Currently 324 positions use the official locator and seven use Google Maps references. Two invalid official coordinates (`0,0` and an out-of-country longitude) are replaced by those independently referenced Google Maps positions. Sources: https://branches.lk/listing-cat/peoples-bank/ and https://www.peoplesbank.lk/branch-service-center/
 - **BOC:** all 593 entries returned by the supplied Branches.lk category. The first 20 pages of the official BOC locator supplied 100 additional reference records and enriched 83 directory records with usable coordinates. Further official pages were blocked with HTTP 403. One confirmed closed/amalgamated directory entry is marked accordingly. Sources: https://branches.lk/listing-cat/bank-of-ceylon/ and https://www.boc.lk/branches
 
 These are source-snapshot counts, not a certified current national network total. The People’s Bank and BOC directories have incomplete geographic/facility data. Their machine availability remains **unknown**, rather than being assumed absent or fabricated.
 
-All 331 requested People’s Bank records are mapped, with 734 map pins across the three imported banks in total. Two Commercial Bank records and 510 BOC records still have no usable map pin. The app does not infer coverage gaps or expansion potential from this incomplete cross-bank dataset. The 331 People’s Bank records are the supplied directory subset, rather than the bank’s complete national network; the official locator also contains other branches and service centres.
+All 331 requested People’s Bank records are mapped, with 736 map pins across the three imported banks in total. All 322 Commercial Bank sites and 331 People’s Bank directory records have map pins; 510 BOC records still have no usable pin. The app does not infer coverage gaps or expansion potential from this incomplete cross-bank dataset. The 331 People’s Bank records are the supplied directory subset, rather than the bank’s complete national network; the official locator also contains other branches and service centres.
 
 ## Coordinate and district quality
 
@@ -65,11 +65,13 @@ Map coordinates are retained from bank direction links, the official People’s 
 
 For unlocated records, **Search address in Google Maps** explicitly opens a text search. Such a link does not establish a verified position. No town-centre coordinates are substituted for bank locations.
 
-District assignments use published coordinates within district geometry, explicit source district fields, town reference matches, and selected source-address or bank-region inferences. Town reference coordinates are checked against district geometry rather than relying solely on reference IDs. People’s Bank district assignments are now resolved from the published positions. The two Commercial Bank conflicts remain in a separate **Needs review** group. The assignment method appears in each location’s details. All 25 administrative districts remain available in the selector and hierarchy. A district with zero imported records must not be read as a bank having no presence there.
+District assignments use published coordinates within district geometry, explicit source district fields, town reference matches, and selected source-address or bank-region inferences. Town reference coordinates are checked against district geometry rather than relying solely on reference IDs. People’s Bank district assignments are now resolved from the published positions. The Commercial Bank coordinate conflicts have been resolved with separately referenced place listings; their original coordinates remain in the dataset for audit. The assignment method appears in each location’s details. All 25 administrative districts remain available in the selector and hierarchy. A district with zero imported records must not be read as a bank having no presence there.
 
 `assets/data/source-report.json` contains counts, source URLs, collection date, limitations, and unresolved district records. `assets/data/locations.json` contains the records and the same report metadata.
 
 `assets/data/pb-published-locations.json` preserves the official locator references and the three individually checked Google Maps place references used to validate People’s Bank coordinates. No user account details, API keys or browser session data are included.
+
+`assets/data/coordinate-corrections.json` records seven verified position corrections, their Google Maps place URLs, identity-matching evidence and the check date. `node scripts/apply-coordinate-corrections.mjs` reapplies these corrections idempotently, checks corrected positions against district polygons and refreshes source counts. Validation checks the final position against the independent evidence and rejects identical branch positions within Commercial Bank and People’s Bank, preventing the known duplicate-coordinate errors from returning.
 
 ## Facilities
 

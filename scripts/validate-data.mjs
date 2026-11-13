@@ -5,7 +5,8 @@ const geography = JSON.parse(await readFile(new URL('../assets/sri-lanka-distric
 const { locations, metadata } = dataset;
 const pbEvidence = JSON.parse(await readFile(new URL('../assets/data/pb-published-locations.json', import.meta.url), 'utf8'));
 const officialPB = new Map(pbEvidence.locations.map(row => [row.id, row]));
-const googlePB = new Map(pbEvidence.googlePlaces.map(row => [row.sourceId, row]));
+const corrections = JSON.parse(await readFile(new URL('../assets/data/coordinate-corrections.json', import.meta.url), 'utf8'));
+const googlePlaces = new Map([...pbEvidence.googlePlaces, ...corrections.locations].map(row => [row.sourceId, row]));
 const districts = new Set(geography.features.map(feature => feature.properties.name));
 assert.equal(districts.size, 25, 'The map must include all 25 districts.');
 assert.equal(new Set(locations.map(row=>row.id)).size,locations.length,'Duplicate location IDs.');
@@ -30,8 +31,8 @@ for (const row of locations) {
     assert.notEqual(row.status,'closed',`${row.id}: closed branch must not have a live map pin`);
     let lat, lng;
     if (row.coordinateMethod === 'official-locator-map' || row.coordinateMethod === 'google-maps-place') {
-      assert.equal(row.bank,'pb',`${row.id}: unexpected PB coordinate method`);
-      const evidence = (row.coordinateMethod === 'official-locator-map' ? officialPB : googlePB).get(row.coordinateSourceRecordId);
+      if (row.coordinateMethod === 'official-locator-map') assert.equal(row.bank,'pb',`${row.id}: unexpected PB coordinate method`);
+      const evidence = (row.coordinateMethod === 'official-locator-map' ? officialPB : googlePlaces).get(row.coordinateSourceRecordId);
       assert.ok(evidence,`${row.id}: missing published source evidence`);
       assert.equal(row.coordinateSource,evidence.sourceUrl,`${row.id}: coordinate source does not match evidence`);
       [lat,lng] = [evidence.lat,evidence.lng];
@@ -60,6 +61,17 @@ for (const bank of ['com','boc','pb']) {
 }
 assert.equal(locations.filter(row=>row.bank==='com' && row.kind==='branch').length,metadata.sources[0].branchRecords);
 assert.equal(locations.filter(row=>row.bank==='pb' && row.lat !== null).length,331,'All 331 imported PB records should have source-linked positions.');
+assert.equal(locations.filter(row=>row.bank==='com' && row.lat !== null).length,322,'All imported Commercial Bank sites should have source-linked positions.');
+for (const bank of ['com','pb']) {
+  const pins = locations.filter(row => row.bank === bank && row.kind === 'branch' && row.lat !== null);
+  assert.equal(new Set(pins.map(row => `${row.lat},${row.lng}`)).size,pins.length,`${bank}: different branches share an identical point; review the source before displaying it as a precise position`);
+}
+for (const fix of corrections.locations) {
+  const row = locations.find(r => r.id === fix.id);
+  assert.equal(row.coordinateSourceRecordId,fix.sourceId,`${fix.id}: correction was not applied`);
+  assert.equal(row.district,fix.district,`${fix.id}: corrected district changed`);
+  assert.ok(row.previousCoordinateSource,`${fix.id}: original source was not retained`);
+}
 const districtCounts = JSON.parse(await readFile(new URL('../assets/data/district-branch-counts.json', import.meta.url), 'utf8'));
 assert.equal(districtCounts.year, 2025);
 assert.equal(districtCounts.status, 'Provisional');

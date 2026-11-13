@@ -6,10 +6,10 @@
       "records": 322,
       "branches": 276,
       "selfServiceSites": 46,
-      "mapped": 320,
-      "pinPending": 2,
+      "mapped": 322,
+      "pinPending": 0,
       "districts": 25,
-      "districtNeedsReview": 2,
+      "districtNeedsReview": 0,
       "closed": 0
     },
     "boc": {
@@ -89,6 +89,13 @@
           "url": "https://www.google.com/maps/place/People's+Elegance+-+Premier+Branch+-+362/@6.916294,79.8705652,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae2595a9dd125f9:0x4fc76bac4897e484!8m2!3d6.916294!4d79.8705652!16s%2Fg%2F11svh7df9j"
         }
       ]
+    },
+    {
+      "name": "Google Maps coordinate conflict corrections",
+      "url": "https://www.google.com/maps",
+      "verifiedOn": "2026-11-14",
+      "records": 7,
+      "evidenceFile": "coordinate-corrections.json"
     }
   ],
   "notes": [

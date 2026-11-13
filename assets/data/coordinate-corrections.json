@@ -1,0 +1,85 @@
+{
+  "verifiedOn": "2026-11-14",
+  "source": "Google Maps place listings checked against the source branch identities and addresses",
+  "locations": [
+    {
+      "id": "com-255",
+      "sourceId": "google-com-kundasale",
+      "lat": 7.2789723,
+      "lng": 80.6803885,
+      "district": "Kandy",
+      "address": "No 67/7/5, Digana Road, Nattarampotha - Yakgahapitiya Rd, 20168",
+      "phone": "0812072925",
+      "sourceUrl": "https://www.google.com/maps/place/Commercial+Bank/@7.2789723,80.6803885,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae366f4e642000d:0xb24c8661eab89e82!8m2!3d7.2789723!4d80.6803885!16s%2Fg%2F1hf6lj9s4",
+      "match": "Phone 0812072925 and street address match the official branch record."
+    },
+    {
+      "id": "com-182",
+      "sourceId": "google-com-giriulla",
+      "lat": 7.3311657,
+      "lng": 80.123635,
+      "district": "Kurunegala",
+      "address": "No 105 Kurunegala Rd, Giriulla 60140",
+      "phone": "0372288339",
+      "sourceUrl": "https://www.google.com/maps/place/Commercial+Bank/@7.3311657,80.123635,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae32021197dd8f9:0x467cd2327b055bae!8m2!3d7.3311657!4d80.123635!16s%2Fg%2F1q5bmmgj0",
+      "match": "Phone 0372288339 and street address match the official branch record."
+    },
+    {
+      "id": "com-135",
+      "sourceId": "google-com-karapitiya",
+      "lat": 6.0654315,
+      "lng": 80.2233354,
+      "district": "Galle",
+      "address": "89 Hirimbura Cross Rd, Galle 80000",
+      "phone": "0912231517",
+      "sourceUrl": "https://www.google.com/maps/place/Commercial+Bank/@6.0654315,80.2233354,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae1717c457fd437:0x456abc8805312a6c!8m2!3d6.0654315!4d80.2233354!16s%2Fg%2F1thg8wml",
+      "match": "Phone 0912231517 and street address match the official branch record."
+    },
+    {
+      "id": "pb-1830",
+      "sourceId": "google-pb-boralesgamuwa",
+      "lat": 6.8413753,
+      "lng": 79.9027019,
+      "district": "Colombo",
+      "address": "59 B94, Boralesgamuwa",
+      "phone": "0112509936",
+      "directoryContact": "011-2509936 (fax field)",
+      "sourceUrl": "https://www.google.com/maps/place/People's+Bank/@6.8413753,79.9027019,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae25a9153a037fd:0xfc4dabe8da802968!8m2!3d6.8413753!4d79.9027019!16s%2Fg%2F1pp2tk6rb",
+      "match": "Google contact matches the directory fax 0112509936; house number 59 and town match."
+    },
+    {
+      "id": "pb-1935",
+      "sourceId": "google-pb-walasmulla",
+      "lat": 6.1552824,
+      "lng": 80.697687,
+      "district": "Hambantota",
+      "address": "Walasmulla, near Beliatta–Walasmulla Road",
+      "phone": null,
+      "sourceUrl": "https://www.google.com/maps/place/People's+Bank/@6.1552874,80.692663,17z/data=!4m10!1m2!2m1!1sPeople's+Bank+Walasmulla!3m6!1s0x3ae14e206c61404b:0xcd2b225763024d46!8m2!3d6.1552824!4d80.697687!15sChhQZW9wbGUncyBCYW5rIFdhbGFzbXVsbGEiA4gBAZIBBGJhbmvgAQA!16s%2Fg%2F11trdwycxb",
+      "match": "Named bank listing at Walasmulla; adjacent same-site Google listing identifies Beliatta–Walasmulla Road, matching the directory road and town.",
+      "supportingUrl": "https://www.google.com/maps/place/People%27s+Bank/data=!4m7!3m6!1s0x3ae14e206c6c3307:0xc3890850e275c1a4!8m2!3d6.1552756!4d80.697552!16s%2Fg%2F11b823dv_f"
+    },
+    {
+      "id": "pb-1973",
+      "sourceId": "google-pb-teldeniya",
+      "lat": 7.3094903,
+      "lng": 80.7646549,
+      "district": "Kandy",
+      "address": "8Q57+QVP, A26, Karalliyadda",
+      "phone": "0812374377",
+      "sourceUrl": "https://www.google.com/maps/place/People's+Bank/@7.3094903,80.7646549,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae360f814ccdf0d:0xe5426a0ff4c39ebe!8m2!3d7.3094903!4d80.7646549!16s%2Fg%2F119x30yyc",
+      "match": "Google phone 0812374377 matches the directory branch contact; A26 is the published Mahiyangana Road locality."
+    },
+    {
+      "id": "pb-2096",
+      "sourceId": "google-pb-kilinochchi",
+      "lat": 9.388032,
+      "lng": 80.4086392,
+      "district": "Kilinochchi",
+      "address": "9CQ5+6F6, A9, Kilinochchi",
+      "phone": "0212285321",
+      "sourceUrl": "https://www.google.com/maps/place/People's+Bank/@9.388032,80.399112,16z/data=!4m10!1m2!2m1!1sPeople's+Bank+Kilinochchi!3m6!1s0x3afe94df162e8a79:0xef69f13c05208f6f!8m2!3d9.388032!4d80.4086392!15sChlQZW9wbGUncyBCYW5rIEtpbGlub2NoY2hpIgOIAQGSARJwdWJsaWNfc2VjdG9yX2JhbmvgAQA!16s%2Fg%2F11b69jg8_y",
+      "match": "Main bank listing (separate from the Town Service Centre), matching A9 Road and Kilinochchi. Google contact differs from the directory and has not been used as a phone match."
+    }
+  ]
+}

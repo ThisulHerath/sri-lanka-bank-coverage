@@ -2,14 +2,15 @@ import { banks, services, loadData } from './data.js';
 import { icon, hydrateIcons } from './icons.js';
 import { setupMapPresentation } from './presentation.js';
 import { setupDistrictComparison } from './districts.js';
+import { setupMapBackground } from './map-background.js';
 
 hydrateIcons();
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const hasPin = location => Number.isFinite(location.lat) && Number.isFinite(location.lng) && location.coordinateStatus === 'published' && location.status !== 'closed';
-const state = { mapMode:'reported', mode:'single', selected:new Set(['com']), district:'all', query:'', service:'all', kind:'all', activeBranch:null, openDistricts:new Set(), openTowns:new Set() };
+const state = { mapMode:'locations', groupPins:false, streetMap:true, mode:'single', selected:new Set(['com']), district:'all', query:'', service:'all', kind:'branch', activeBranch:null, openDistricts:new Set(), openTowns:new Set() };
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let branches = [], districts = [], metadata, geography, map, markers, districtLayer, pendingLayer, presentation, districtCounts;
+let branches = [], districts = [], metadata, geography, map, markers, districtLayer, pendingLayer, presentation, districtCounts, pinLayer, clusterLayer, background;
 const markerById = new Map(), districtByName = new Map();
 const count = value => value.toLocaleString('en-LK');
 const assignmentLabels = {
@@ -33,7 +34,7 @@ function coordinateReferenceLabel(row) {
 }
 function coordinateDescription(row) {
   if (row.coordinateMethod === 'official-locator-map') return 'Position published in People’s Bank’s official map locator.';
-  if (row.coordinateMethod === 'google-maps-place') return 'Position from the Google Maps place listing, matched to the directory’s published contact details.';
+  if (row.coordinateMethod === 'google-maps-place') return `Position from the referenced Google Maps place listing. Match: ${row.coordinateMatch || 'branch identity and address'}`;
   return 'Position from the bank’s published Google Maps direction link.';
 }
 function visibleBranches() {
@@ -103,6 +104,11 @@ function renderReportedMap() {
   $('#map-notice').hidden = true;
 }
 function renderMarkers(visible) {
+  if (map) {
+    pinLayer.clearLayers(); clusterLayer.clearLayers();
+    markers = state.groupPins ? clusterLayer : pinLayer;
+    background.setVisible(state.mapMode === 'locations' && state.streetMap);
+  }
   if (state.mapMode === 'reported' && map) { renderReportedMap(); return; }
   if (!map) return;
   markers.clearLayers(); pendingLayer.clearLayers(); markerById.clear();
@@ -113,32 +119,21 @@ function renderMarkers(visible) {
       bankId: row.bank,
       icon:L.divIcon({className:`branch-pin ${row.kind === 'self-service' ? 'machine-pin' : ''}`,html:`<span style="--bank-color:${bank.color}"></span>`,iconSize:[22,22],iconAnchor:[11,11],popupAnchor:[0,-6]}),
       title:`${bank.name} — ${row.name}`,alt:`${bank.name} — ${row.name}`,riseOnHover:true,
-    }).bindPopup(`<div class="popup-bank" style="color:${bank.color}">${esc(bank.name)}</div><h3 class="popup-title">${esc(row.name)}</h3><div class="popup-district">${esc(row.town)} · ${esc(row.district)}</div>${facilities(row)}<p class="popup-address">${esc(row.address || 'Address not published')}</p><div class="popup-actions"><button data-detail="${row.id}">Location details ${icon('arrow-right')}</button><a href="${safeLink(row.mapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps ${icon('arrow-up-right')}</a></div>`,{maxWidth:300,autoPanPaddingTopLeft:[15,90],autoPanPaddingBottomRight:[20,35]});
+    }).bindPopup(`<div class="popup-bank" style="color:${bank.color}">${esc(bank.name)}</div><h3 class="popup-title">${esc(row.name)}</h3><div class="popup-district">${esc(row.town)} · ${esc(row.district)}</div>${facilities(row)}<p class="popup-coordinates">${row.lat.toFixed(6)}, ${row.lng.toFixed(6)}</p><p class="popup-address">${esc(row.address || 'Address not published')}</p><div class="popup-actions"><button data-detail="${row.id}">Location details ${icon('arrow-right')}</button><a href="${safeLink(row.mapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps ${icon('arrow-up-right')}</a></div>`,{maxWidth:300,autoPanPaddingTopLeft:[15,90],autoPanPaddingBottomRight:[20,35]});
     marker.on('click', () => { state.activeBranch = row.id; });
     markerById.set(row.id,marker);
     return marker;
   });
-  markers.addLayers(leafletMarkers);
+  leafletMarkers.forEach(marker => markers.addLayer(marker));
   for (const [name, layer] of districtByName) {
-    const rows = visible.filter(row => row.district === name);
-    const pending = rows.filter(row => !hasPin(row) && row.status !== 'closed');
     const selected = state.district === name;
-    layer.setStyle({fillColor:selected ? '#dbe9fc' : '#ffffff',color:selected ? '#5489c8' : '#9ab1c5',weight:selected ? 1.8 : 1,fillOpacity:1});
+    layer.setStyle({fillColor:selected ? '#dbe9fc' : '#ffffff',color:selected ? '#5489c8' : '#9ab1c5',weight:selected ? 1.8 : .65,fillOpacity:state.streetMap ? (selected ? .08 : .015) : 1});
     layer.unbindTooltip();
-    if (pending.length) {
-      const marker = L.marker(layer.getBounds().getCenter(),{
-        icon:L.divIcon({className:'district-count-marker',html:`<span class="district-count-label">${esc(name)}</span><span class="district-pending-count">${count(pending.length)}</span>`,iconSize:[95,34],iconAnchor:[47,17]}),
-        title:`${name}: ${pending.length} records awaiting map pins. District summary, not a branch location.`,
-      }).addTo(pendingLayer);
-      marker.bindTooltip(`${name} · ${count(pending.length)} awaiting pins. Select to browse.`,{direction:'top'});
-      marker.on('click',()=>focusDistrict(name));
-    } else {
-      layer.bindTooltip(name,{permanent:true,direction:'center',className:'district-label',opacity:.85});
-    }
+    layer.bindTooltip(name,{direction:'top',className:'district-label',opacity:.85});
   }
   const pending = visible.filter(row=>!hasPin(row));
   $('#map-notice').hidden = !pending.length;
-  $('#map-notice').textContent = `${count(pending.length)} records have no usable map pin. Dotted counts are district summaries.`;
+  $('#map-notice').textContent = `${count(pending.length)} records lack reliable coordinates and are listed in the directory only. No district-centre pins are used.`;
 }
 
 function render() {
@@ -169,16 +164,21 @@ function render() {
   if (reviewOption) reviewOption.disabled = reported;
   document.body.classList.toggle('reported-view', reported);
   $('#location-only-filters').hidden = reported;
+  $('#pin-map-options').hidden = reported;
+  $('#map-data-mode').value = state.mapMode;
+  $('#map-pins-button').setAttribute('aria-pressed',String(!reported));
+  $('#map-totals-button').setAttribute('aria-pressed',String(reported));
+  $('#presentation-data-toggle').textContent = reported ? 'Show branch pins' : 'Show district totals';
   $('#location-search-wrap').hidden = reported;
   $('#directory-stats').hidden = reported;
   $('#reference-context').hidden = reported;
   $('#reference-context').textContent = `2025 reference: ${count(reportedRows().reduce((sum,row)=>sum+reportedTotal(row),0))} reported branches for these banks and districts. Directory records below are a separate snapshot.`;
-  $('#map-data-explanation').textContent = reported ? 'Official district counts, 2025 provisional. Select banks to compare their networks.' : 'Source-linked branches and self-service sites. Expand a district, then a town.';
+  $('#map-data-explanation').textContent = reported ? 'Official district counts, 2025 provisional. Select banks to compare their networks.' : 'One pin per published location. Select a pin for its address, coordinates and Google Maps directions.';
   $('#directory-list-title').textContent = reported ? 'District branch totals' : 'Districts & towns';
-  $('#map-help').textContent = reported ? 'Numbers represent whole districts, not exact branch positions. Switch to individual locations for addresses and facilities.' : 'Pins use published coordinates. Dotted badges count records awaiting pins.';
-  $('#legend-explanation').innerHTML = reported ? 'District counts · 2025 provisional<br />Darker fill = more selected-bank branches<br />CBSL · ESS 2026 · Table 7.8' : '<i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Dotted count = records awaiting pins';
+  $('#map-help').textContent = reported ? 'Numbers represent whole districts, not exact branch positions. Switch to individual locations for addresses and facilities.' : 'Each pin uses published branch coordinates. Zoom in to separate nearby pins. Records without reliable coordinates stay in the directory.';
+  $('#legend-explanation').innerHTML = reported ? 'District counts · 2025 provisional<br />Darker fill = more selected-bank branches<br />CBSL · ESS 2026 · Table 7.8' : '<i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Pins = published locations<br />Click a pin for coordinates and directions';
   $('#map-instruction').textContent = reported ? 'Select a district to focus its totals' : 'Click a district to explore its towns';
-  $('#map-footer-instruction').textContent = reported ? 'District aggregates · Switch map data to explore individual locations' : 'Zoom clusters · Select a district, town or marker';
+  $('#map-footer-instruction').textContent = reported ? 'District aggregates · Switch map data to explore individual locations' : 'Individual location pins · Click a pin for its address and coordinates';
   if (reported) {
     $('#map-subtitle').textContent += ' · 2025 reported';
     $('#visible-summary').textContent = `${count(reportedRows().reduce((sum,row)=>sum+reportedTotal(row),0))} reported branches`;
@@ -216,18 +216,28 @@ function showLocation(id) {
   if (!$('#location-dialog').open) $('#location-dialog').showModal();
 }
 
-function navigateOverview({district, bank, directory}) {
-  state.mapMode = directory ? 'locations' : 'reported';
+function navigateOverview({district, bank}) {
+  state.mapMode = 'locations';
   state.mode = bank === 'total' ? 'compare' : 'single';
   state.selected = new Set(bank === 'total' ? Object.keys(banks) : [bank]);
-  state.query=''; state.service='all'; state.kind=directory ? 'branch' : 'all';
+  state.query=''; state.service='all'; state.kind='branch';
   $('#branch-search').value=''; $('#location-type').value=state.kind;
   $('#map-data-mode').value=state.mapMode;
   focusDistrict(district);
   $('#network-explorer').scrollIntoView({behavior:reducedMotion ? 'instant' : 'smooth',block:'start'});
 }
 function setupEvents() {
-  $('#map-data-mode').addEventListener('change', event => {state.mapMode=event.target.value;if(state.mapMode==='reported' && state.district==='Needs review'){state.district='all';$('#district-filter').value='all';}render();fitVisible();});
+  function setMapMode(mode) {
+    state.mapMode = mode;
+    if (mode === 'reported' && state.district === 'Needs review') { state.district='all'; $('#district-filter').value='all'; }
+    render(); fitVisible();
+  }
+  $('#map-data-mode').addEventListener('change', event => setMapMode(event.target.value));
+  $('#map-pins-button').addEventListener('click', () => setMapMode('locations'));
+  $('#map-totals-button').addEventListener('click', () => setMapMode('reported'));
+  $('#presentation-data-toggle').addEventListener('click', () => setMapMode(state.mapMode === 'reported' ? 'locations' : 'reported'));
+  $('#group-pins').addEventListener('change', event => {state.groupPins=event.target.checked;render();});
+  $('#street-map').addEventListener('change', event => {state.streetMap=event.target.checked;render();});
   $('#bank-options').addEventListener('click',event=>{
     const button = event.target.closest('[data-bank]'); if (!button) return;
     const bank = button.dataset.bank;
@@ -272,11 +282,12 @@ function setupEvents() {
     const marker=markerById.get(button.dataset.showPin);
     if(!marker)return;
     $('#location-dialog').close();
-    markers.zoomToShowLayer(marker,()=>marker.openPopup());
+    if (state.groupPins) markers.zoomToShowLayer(marker,()=>{map.setView(marker.getLatLng(),Math.max(map.getZoom(),16));marker.openPopup();});
+    else { map.setView(marker.getLatLng(),16,{animate:!reducedMotion}); marker.openPopup(); }
   });
   $('#reset-map').addEventListener('click',()=>{
-    state.district='all';state.query='';state.kind='all';state.service='all';state.activeBranch=null;
-    $('#district-filter').value='all';$('#branch-search').value='';$('#location-type').value='all';
+    state.district='all';state.query='';state.kind='branch';state.service='all';state.activeBranch=null;
+    $('#district-filter').value='all';$('#branch-search').value='';$('#location-type').value='branch';
     render();map?.closePopup();fitVisible();
   });
 }
@@ -294,10 +305,13 @@ function initializeMap() {
     layer.on('mouseover',()=>layer.setStyle({weight:1.8,color:'#6d94c5'}));
     layer.on('mouseout',()=>layer.setStyle({weight:state.district===feature.properties.name?1.8:1,color:state.district===feature.properties.name?'#5489c8':'#9ab1c5'}));
   }}).addTo(map);
-  markers=L.markerClusterGroup({maxClusterRadius:32,showCoverageOnHover:false,animate:!reducedMotion,spiderfyOnMaxZoom:true,iconCreateFunction:cluster=>{
+  background=setupMapBackground(map,geography);
+  pinLayer=L.featureGroup().addTo(map);
+  clusterLayer=L.markerClusterGroup({maxClusterRadius:32,showCoverageOnHover:false,animate:!reducedMotion,spiderfyOnMaxZoom:true,iconCreateFunction:cluster=>{
     const colors=[...new Set(cluster.getAllChildMarkers().map(marker=>banks[marker.options.bankId].color))];
     return L.divIcon({className:'network-cluster',iconSize:[38,38],html:`<span class="cluster-number" style="--cluster-color:${colors.length===1?colors[0]:'#254c73'}">${cluster.getChildCount()}<span class="cluster-colors">${colors.map(color=>`<i style="background:${color}"></i>`).join('')}</span></span>`});
   }}).addTo(map);
+  markers=pinLayer;
   pendingLayer=L.layerGroup().addTo(map);
   map.setMaxBounds(districtLayer.getBounds().pad(.65));
   fitVisible();
@@ -318,10 +332,11 @@ for (const dialog of [dataDialog,locationDialog]) dialog.addEventListener('click
 try {
   ({branches,districts,metadata,geography,districtCounts}=await loadData());
   setupDistrictComparison(districtCounts, navigateOverview);
+  $('#location-type').value=state.kind;
   districts.forEach(district=>{const option=document.createElement('option');option.value=district;option.textContent=district;$('#district-filter').append(option);});
   if(branches.some(row=>row.district==='Needs review')){const option=document.createElement('option');option.value='Needs review';option.textContent='District assignment needs review';$('#district-filter').append(option);}
   $('#data-status').textContent=`${count(branches.length)} imported locations · 13 Nov 2026 · Published pins and address-only records are distinguished.`;
-  $('#source-summary').innerHTML=`<div class="source-cards">${Object.entries(banks).map(([id,bank])=>`<div><strong style="color:${bank.color}">${esc(bank.name)}</strong><span>${count(metadata.banks[id].records)} records · ${count(metadata.banks[id].mapped)} map pins</span><small>${metadata.banks[id].pinPending} awaiting usable coordinates</small></div>`).join('')}</div><div class="dialog-callout"><strong>Coordinate completeness varies by source.</strong><p>Commercial Bank publishes location coordinates and machine types. People’s Bank directory records are matched to its official map locator and individual Google Maps place listings. BOC’s official locator supplied partial coordinate enrichment, then blocked further pages. Source and map references are included in location details.</p></div><div class="source-links"><a href="https://www.combank.lk/branches" target="_blank" rel="noopener noreferrer">Commercial Bank locator ↗</a><a href="https://branches.lk/listing-cat/peoples-bank/" target="_blank" rel="noopener noreferrer">People’s Bank directory ↗</a><a href="https://www.peoplesbank.lk/branch-service-center/" target="_blank" rel="noopener noreferrer">People’s Bank map locator ↗</a><a href="https://branches.lk/listing-cat/bank-of-ceylon/" target="_blank" rel="noopener noreferrer">BOC directory ↗</a></div>`;
+  $('#source-summary').innerHTML=`<div class="source-cards">${Object.entries(banks).map(([id,bank])=>`<div><strong style="color:${bank.color}">${esc(bank.name)}</strong><span>${count(metadata.banks[id].records)} records · ${count(metadata.banks[id].mapped)} map pins</span><small>${metadata.banks[id].pinPending} awaiting usable coordinates</small></div>`).join('')}</div><div class="dialog-callout"><strong>Coordinate completeness varies by source.</strong><p>Commercial Bank publishes location coordinates and machine types; three conflicting direction links were corrected against matching Google Maps place listings. People’s Bank directory records are matched to its official map locator and individual Google Maps place listings. BOC’s official locator supplied partial coordinate enrichment, then blocked further pages. A duplicate-coordinate audit also corrected four conflicting People’s Bank locator positions. Original positions are retained in the local data, and each corrected location includes its place reference and matching evidence. Source and map references are included in location details.</p></div><div class="source-links"><a href="https://www.combank.lk/branches" target="_blank" rel="noopener noreferrer">Commercial Bank locator ↗</a><a href="https://branches.lk/listing-cat/peoples-bank/" target="_blank" rel="noopener noreferrer">People’s Bank directory ↗</a><a href="https://www.peoplesbank.lk/branch-service-center/" target="_blank" rel="noopener noreferrer">People’s Bank map locator ↗</a><a href="https://branches.lk/listing-cat/bank-of-ceylon/" target="_blank" rel="noopener noreferrer">BOC directory ↗</a></div>`;
   setupEvents();initializeMap();
   presentation = setupMapPresentation({
     map,

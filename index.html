@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/src/network.css" />
   <link rel="stylesheet" href="/src/presentation.css" />
   <link rel="stylesheet" href="/src/districts.css" />
+  <link rel="stylesheet" href="/src/map-pins.css" />
   <script defer src="/vendor/leaflet/leaflet.js"></script>
   <script defer src="/vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
   <script type="module" src="/src/app.js"></script>
@@ -73,16 +74,16 @@
       </section>
 
       <section id="network-explorer" class="network-panel" aria-labelledby="network-title">
-        <div class="panel-heading"><div><h2 id="network-title">Explore Sri Lanka’s bank network</h2><p>Browse by district and town, or compare the three banks.</p></div><div class="panel-actions"><span class="panel-tag"><span class="small-dot green"></span>Sri Lanka only</span><button id="present-map" class="button button-primary" aria-pressed="false"><span data-icon="maximize"></span>Present map</button></div></div>
-        <div id="presentation-toolbar" aria-hidden="true"><div class="presentation-heading"><span class="eyebrow">COMMERCIAL BANK · NETWORK INTELLIGENCE</span><strong>Sri Lanka · Branch network</strong><span id="presentation-selection"></span></div><div class="presentation-actions"><span id="presentation-counts" aria-live="polite"></span><button id="fit-presentation" class="button button-white"><span data-icon="maximize"></span>Fit view</button><button id="exit-presentation" class="button button-primary"><span data-icon="close"></span>Exit full screen</button></div></div>
+        <div class="panel-heading"><div><h2 id="network-title">Explore Sri Lanka’s bank network</h2><p>Browse by district and town, or compare the three banks.</p></div><div class="panel-actions"><div class="map-view-buttons" role="group" aria-label="Map content"><button id="map-pins-button" aria-pressed="true">Branch pins</button><button id="map-totals-button" aria-pressed="false">District totals</button></div><span class="panel-tag"><span class="small-dot green"></span>Sri Lanka only</span><button id="present-map" class="button button-primary" aria-pressed="false"><span data-icon="maximize"></span>Present map</button></div></div>
+        <div id="presentation-toolbar" aria-hidden="true"><div class="presentation-heading"><span class="eyebrow">COMMERCIAL BANK · NETWORK INTELLIGENCE</span><strong>Sri Lanka · Branch network</strong><span id="presentation-selection"></span></div><div class="presentation-actions"><span id="presentation-counts" aria-live="polite"></span><button id="presentation-data-toggle" class="button button-white">Show district totals</button><button id="fit-presentation" class="button button-white"><span data-icon="maximize"></span>Fit view</button><button id="exit-presentation" class="button button-primary"><span data-icon="close"></span>Exit full screen</button></div></div>
         <div class="explorer">
           <aside class="controls" aria-label="Network filters">
-            <label class="field-heading" for="map-data-mode">MAP DATA</label><div class="select-wrap map-data-select"><select id="map-data-mode"><option value="reported">Reported district totals · 2025</option><option value="locations">Individual locations · Nov 2026</option></select><span data-icon="chevron-down"></span></div><p id="map-data-explanation" class="map-data-explanation"></p><p id="reference-context" class="reference-context" hidden></p><div class="field-heading">BANK SELECTION</div>
+            <label class="field-heading" for="map-data-mode">MAP DATA</label><div class="select-wrap map-data-select"><select id="map-data-mode"><option value="locations">Individual branch pins · Nov 2026</option><option value="reported">District totals only · 2025</option></select><span data-icon="chevron-down"></span></div><p id="map-data-explanation" class="map-data-explanation"></p><p id="reference-context" class="reference-context" hidden></p><div class="field-heading">BANK SELECTION</div>
             <div class="segmented" role="group" aria-label="View mode"><button id="single-mode" aria-pressed="true">Single bank</button><button id="compare-mode" aria-pressed="false"><span data-icon="compare"></span>Compare</button></div>
             <div class="control-label-row"><label class="field-heading">BANK NETWORKS</label><span id="selection-hint">Select one</span></div>
             <div id="bank-options" class="bank-options"></div>
             <div class="filter-divider"></div>
-            <div id="location-only-filters"><div class="control-label-row"><span class="field-heading">LOCATION TYPE</span></div>
+            <div id="pin-map-options" class="pin-map-options"><label><input type="checkbox" id="street-map" checked /> Show streets &amp; roads</label><label><input type="checkbox" id="group-pins" /> Group nearby pins</label><small id="street-map-status">Street map · OpenStreetMap · Internet required</small></div><div id="location-only-filters"><div class="control-label-row"><span class="field-heading">LOCATION TYPE</span></div>
             <div class="select-wrap type-select"><select id="location-type" aria-label="Location type"><option value="all">Branches & self-service sites</option><option value="branch">Branches only</option><option value="self-service">Self-service sites only</option></select><span data-icon="chevron-down"></span></div>
             <div class="control-label-row facility-heading"><span class="field-heading">FACILITIES</span><button data-open-notes class="text-help" aria-label="Facility definitions">What are these?</button></div>
             <div id="service-options" class="service-options" role="group" aria-label="Facility filter"></div>
@@ -93,14 +94,14 @@
             <div class="branch-list-heading"><h3 id="directory-list-title">Districts & towns</h3><span id="list-count">—</span></div>
             <label id="location-search-wrap" class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Town, branch, address or code" aria-label="Search locations" autocomplete="off" /></label>
             <div id="branch-list" class="branch-list" aria-live="polite"></div>
-            <div class="control-footnote"><span data-icon="info"></span><p id="map-help">Map pins use published coordinates. Dotted district badges count records still awaiting a pin.</p></div>
+            <div class="control-footnote"><span data-icon="info"></span><p id="map-help">Map pins use published coordinates. Records without reliable coordinates stay in the directory.</p></div>
           </aside>
 
           <div class="map-wrap">
             <div id="map" role="region" aria-label="Interactive map of Sri Lanka’s 25 districts"></div>
             <div class="map-heading"><span class="map-heading-icon" data-icon="globe"></span><div>Sri Lanka<small id="map-subtitle">Commercial Bank network</small></div></div>
             <button id="reset-map" class="map-reset" title="Reset map to Sri Lanka"><span data-icon="maximize"></span><span>Reset view</span></button>
-            <div class="map-legend"><span class="legend-title">BANK NETWORKS</span><div id="legend-items"></div><span id="legend-explanation" class="legend-demo"><i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Dotted count = district total awaiting pins</span></div>
+            <div class="map-legend"><span class="legend-title">BANK NETWORKS</span><div id="legend-items"></div><span id="legend-explanation" class="legend-demo"><i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Pins = published branch locations</span></div>
             <div class="map-caption"><span id="map-geography">25 district boundaries</span><span id="map-instruction">Click a district to explore its towns</span></div>
             <div class="map-north" aria-hidden="true"><span>N</span><svg viewBox="0 0 20 30"><path d="M10 1 19 28 10 22 1 28Z" fill="#28445f"/><path d="M10 1v21l9 6Z" fill="#92a8b7"/></svg></div>
             <div id="map-notice" class="map-notice" hidden></div>
@@ -120,9 +121,9 @@
     <h3>Facilities</h3><dl class="service-definitions"><dt>ATM</dt><dd>Cash withdrawals only</dd><dt>CRM</dt><dd>Cash deposits and withdrawals</dd><dt>CDM</dt><dd>Cash deposits only</dd><dt>EDM</dt><dd>Envelope-based cheque deposits</dd><dt>ACDM</dt><dd>Automated cheque deposits</dd></dl>
     <p>A facility badge means the source lists that facility at the location. It is not the number of individual machines. Missing facility information means unknown availability.</p>
     <h3>Locations and district assignments</h3><p>Pins retain coordinates published in bank direction links, People’s Bank’s official map locator, or referenced Google Maps place listings. These have not been independently surveyed. Missing coordinates and out-of-country or conflicting coordinates are withheld. Address search links open Google Maps searches and do not establish exact locations.</p>
-    <p>Districts are assigned from coordinates, source district fields, or a town reference. Some source fields and inferred assignments require review; each location shows its assignment method. Dotted badges are district summaries of records awaiting pins, not branch locations. Zero classified records is not evidence that a bank has no presence.</p>
+    <p>Districts are assigned from coordinates, source district fields, or a town reference. Some source fields and inferred assignments require review; each location shows its assignment method. Zero classified records is not evidence that a bank has no presence.</p>
     <h3>Geography and references</h3><p>District boundaries: <a href="https://www.geoboundaries.org/api/current/gbOpen/LKA/ADM2/" target="_blank" rel="noopener noreferrer">geoBoundaries LKA ADM2</a>, OpenStreetMap / Wambacher, 2017 geography, ODbL 1.0. Town reference: <a href="https://github.com/yasithsfonseka/SriLankaCitiesDatabase" target="_blank" rel="noopener noreferrer">SriLankaCitiesDatabase</a> (MIT). Town coordinates are never used as branch pins.</p>
-    <p>This application reads local static data. Source and Google Maps links require internet access. No backend or paid map API is required.</p>
+    <p>This application reads local static data. Source and Google Maps links require internet access. Street and road tiles are provided by OpenStreetMap and require internet access. No backend or paid map API is required.</p>
     <button id="dialog-done" class="button button-primary">Back to the network<span data-icon="arrow-right"></span></button>
   </dialog>
   <dialog id="location-dialog" aria-labelledby="location-dialog-title"><div class="dialog-heading"><span class="eyebrow">LOCATION DETAILS</span><button id="close-location" class="icon-button" aria-label="Close location details"><span data-icon="close"></span></button></div><div id="location-content"></div></dialog>
