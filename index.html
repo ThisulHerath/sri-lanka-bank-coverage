@@ -4,12 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#102642" />
-  <meta name="description" content="Explore and compare Sri Lanka’s bank branch networks from a Commercial Bank perspective. Interactive frontend demonstration using illustrative data." />
+  <meta name="description" content="Explore Sri Lanka’s Commercial Bank, BOC and People’s Bank directories by district, town, branch and self-service facility." />
   <title>Branch Network Analysis · Commercial Bank</title>
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
   <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="/vendor/leaflet-markercluster/MarkerCluster.css" />
   <link rel="stylesheet" href="/src/styles.css" />
+  <link rel="stylesheet" href="/src/network.css" />
   <script defer src="/vendor/leaflet/leaflet.js"></script>
+  <script defer src="/vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
   <script type="module" src="/src/app.js"></script>
 </head>
 <body>
@@ -42,21 +45,21 @@
     </header>
     <main id="main">
       <div class="page-heading">
-        <div><div class="eyebrow">NETWORK PLANNING & EXPANSION</div><h1>Branch network analysis<span>.</span></h1><p>A clearer view of our presence. A better perspective on what’s next.</p></div>
+        <div><div class="eyebrow">NETWORK PLANNING & EXPANSION</div><h1>Branch network analysis<span>.</span></h1><p>One island. 25 districts. Explore every imported branch and self-service location.</p></div>
         <button class="button button-white" data-open-notes><span data-icon="info"></span>About this data</button>
       </div>
 
-      <div class="demo-banner"><span class="demo-badge"><span></span>DEMO DATA</span><p>Illustrative branch locations. Not verified bank coverage or expansion recommendations.</p><button data-open-notes aria-label="Read demo data methodology"><span data-icon="arrow-up-right"></span></button></div>
+      <div class="demo-banner source-banner"><span class="demo-badge"><span></span>SOURCE SNAPSHOT</span><p id="data-status">Loading published directory records…</p><button data-open-notes aria-label="Read source information"><span data-icon="arrow-up-right"></span></button></div>
 
       <section class="stats" aria-label="Current view summary" aria-live="polite">
-        <article class="stat-card"><div class="stat-top">Branches in view<span data-icon="building"></span></div><div class="stat-value" id="branch-count">18</div><div class="stat-bottom"><span class="small-dot blue"></span>Illustrative branch records</div></article>
-        <article class="stat-card"><div class="stat-top">Districts represented<span data-icon="pin"></span></div><div class="stat-value"><span id="district-count">18</span><span class="stat-denominator"> / 25</span></div><div class="stat-bottom">Districts with visible sample branches</div></article>
+        <article class="stat-card"><div class="stat-top">Locations in view<span data-icon="building"></span></div><div class="stat-value" id="branch-count">—</div><div class="stat-bottom" id="location-breakdown">Published directory records</div></article>
+        <article class="stat-card"><div class="stat-top">Districts represented<span data-icon="pin"></span></div><div class="stat-value"><span id="district-count">—</span><span class="stat-denominator"> / 25</span></div><div class="stat-bottom" id="district-summary">Districts in this filtered directory</div></article>
         <article class="stat-card"><div class="stat-top">Banks selected<span data-icon="layers"></span></div><div class="stat-value">0<span id="bank-count">1</span><span class="stat-denominator"> / 03</span></div><div class="stat-bottom" id="selected-summary">Commercial Bank</div></article>
-        <article class="stat-card source-card"><div class="stat-top">Dataset<span data-icon="database"></span></div><div class="stat-value dataset-value">Demo preview</div><div class="stat-bottom"><span class="small-dot amber"></span>Awaiting verified branch data</div></article>
+        <article class="stat-card source-card"><div class="stat-top">Locations with map pins<span data-icon="database"></span></div><div class="stat-value" id="mapped-count">—</div><div class="stat-bottom" id="pending-summary">Published coordinates only</div></article>
       </section>
 
       <section class="network-panel" aria-labelledby="network-title">
-        <div class="panel-heading"><div><h2 id="network-title">Explore the branch network</h2><p>Choose a bank or bring the networks together.</p></div><span class="panel-tag"><span class="small-dot green"></span>Interactive map</span></div>
+        <div class="panel-heading"><div><h2 id="network-title">Explore Sri Lanka’s bank network</h2><p>Browse by district and town, or compare the three banks.</p></div><span class="panel-tag"><span class="small-dot green"></span>Sri Lanka only</span></div>
         <div class="explorer">
           <aside class="controls" aria-label="Network filters">
             <div class="field-heading">VIEW MODE</div>
@@ -64,38 +67,50 @@
             <div class="control-label-row"><label class="field-heading">BANK NETWORKS</label><span id="selection-hint">Select one</span></div>
             <div id="bank-options" class="bank-options"></div>
             <div class="filter-divider"></div>
+            <div class="control-label-row"><span class="field-heading">LOCATION TYPE</span></div>
+            <div class="select-wrap type-select"><select id="location-type" aria-label="Location type"><option value="all">Branches & self-service sites</option><option value="branch">Branches only</option><option value="self-service">Self-service sites only</option></select><span data-icon="chevron-down"></span></div>
+            <div class="control-label-row facility-heading"><span class="field-heading">FACILITIES</span><button data-open-notes class="text-help" aria-label="Facility definitions">What are these?</button></div>
+            <div id="service-options" class="service-options" role="group" aria-label="Facility filter"></div>
+            <p class="service-explanation" id="service-explanation">Facilities are shown where the source publishes them.</p>
+            <div class="filter-divider"></div>
             <label class="field-heading" for="district-filter">GEOGRAPHIC FOCUS</label>
             <div class="select-wrap"><span data-icon="pin"></span><select id="district-filter"><option value="all">All districts</option></select><span data-icon="chevron-down"></span></div>
-            <div class="branch-list-heading"><h3>Branches in this view</h3><span id="list-count">18</span></div>
-            <label class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Search a town or branch" aria-label="Search demo branches" autocomplete="off" /></label>
+            <div class="branch-list-heading"><h3>Districts & towns</h3><span id="list-count">—</span></div>
+            <label class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Town, branch, address or code" aria-label="Search locations" autocomplete="off" /></label>
             <div id="branch-list" class="branch-list" aria-live="polite"></div>
-            <div class="control-footnote"><span data-icon="info"></span><p>Locations represent sample town centres, not exact branch addresses.</p></div>
+            <div class="control-footnote"><span data-icon="info"></span><p>Map pins use published coordinates. Dotted district badges count records still awaiting a pin.</p></div>
           </aside>
 
           <div class="map-wrap">
-            <div id="map" role="region" aria-label="Interactive Sri Lanka branch map"></div>
+            <div id="map" role="region" aria-label="Interactive map of Sri Lanka’s 25 districts"></div>
             <div class="map-heading"><span class="map-heading-icon" data-icon="globe"></span><div>Sri Lanka<small id="map-subtitle">Commercial Bank network</small></div></div>
             <button id="reset-map" class="map-reset" title="Reset map to Sri Lanka"><span data-icon="maximize"></span><span>Reset view</span></button>
-            <div class="map-legend"><span class="legend-title">BRANCH NETWORKS</span><div id="legend-items"></div><span class="legend-demo">Illustrative locations only</span></div>
+            <div class="map-legend"><span class="legend-title">BANK NETWORKS</span><div id="legend-items"></div><span class="legend-demo"><i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Dotted count = district total awaiting pins</span></div>
+            <div class="map-caption"><span id="map-geography">25 district boundaries</span><span>Click a district to explore its towns</span></div>
             <div class="map-north" aria-hidden="true"><span>N</span><svg viewBox="0 0 20 30"><path d="M10 1 19 28 10 22 1 28Z" fill="#28445f"/><path d="M10 1v21l9 6Z" fill="#92a8b7"/></svg></div>
-            <div id="map-notice" class="map-notice" hidden>Street tiles unavailable. The local Sri Lanka outline and branches remain interactive.</div>
+            <div id="map-notice" class="map-notice" hidden></div>
           </div>
         </div>
-        <div class="panel-footer"><span><span data-icon="mouse"></span>Scroll to zoom · Drag to explore · Select a marker for details</span><span id="visible-summary">18 sample branches displayed</span></div>
+        <div class="panel-footer"><span><span data-icon="mouse"></span>Zoom clusters to see individual locations · Select a district, town or marker</span><span id="visible-summary">Loading locations…</span></div>
       </section>
-      <footer class="page-footer"><span>Commercial Bank · Branch Network Analysis</span><span>Planning preview<span class="footer-dot">·</span>Frontend demonstration</span></footer>
+      <footer class="page-footer"><span>Commercial Bank · Branch Network Analysis</span><span>Directory snapshot: 13 Nov 2026<span class="footer-dot">·</span>Source-linked locations</span></footer>
     </main>
   </div>
 
   <dialog id="data-dialog" aria-labelledby="dialog-title">
     <div class="dialog-heading"><span class="eyebrow">DATA & METHODOLOGY</span><button id="close-dialog" class="icon-button" aria-label="Close data notes"><span data-icon="close"></span></button></div>
-    <h2 id="dialog-title">A foundation for better decisions.</h2>
-    <p>This frontend preview demonstrates how Sri Lanka’s bank networks can be explored and compared.</p>
-    <div class="dialog-callout"><strong>All branch records are illustrative.</strong><p>Names, counts, and coordinates are synthetic sample data near town centres. They do not represent verified branch locations, national network totals, or recommendations.</p></div>
-    <h3>What the figures mean</h3><p>Branch counts and district counts are calculated from the currently filtered sample records. A marker indicates a sample point; it does not establish the bank’s service coverage.</p>
-    <h3>Map sources</h3><p>The local country outline is from <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Street tiles are provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> and require an internet connection. Branch data stays in your browser.</p>
-    <h3>Ready for verified data</h3><p>The next dataset can provide bank, branch name, district, latitude, longitude, and existing or proposed status. No backend is required.</p>
+    <h2 id="dialog-title">Published records. Clear provenance.</h2>
+    <p>Snapshot collected on 13 November 2026. Counts describe the imported directories, rather than a certified current national network total.</p>
+    <div id="source-summary"></div>
+    <h3>Facilities</h3><dl class="service-definitions"><dt>ATM</dt><dd>Cash withdrawals only</dd><dt>CRM</dt><dd>Cash deposits and withdrawals</dd><dt>CDM</dt><dd>Cash deposits only</dd><dt>EDM</dt><dd>Envelope-based cheque deposits</dd><dt>ACDM</dt><dd>Automated cheque deposits</dd></dl>
+    <p>A facility badge means the source lists that facility at the location. It is not the number of individual machines. Missing facility information means unknown availability.</p>
+    <h3>Locations and district assignments</h3><p>Pins retain the coordinates in the bank’s published direction links. These have not been independently surveyed. Missing coordinates and out-of-country or conflicting coordinates are withheld. Address search links open Google Maps searches and do not establish exact locations.</p>
+    <p>Districts are assigned from coordinates, source district fields, or a town reference. Some source fields and inferred assignments require review; each location shows its assignment method. Dotted badges are district summaries of records awaiting pins, not branch locations. Zero classified records is not evidence that a bank has no presence.</p>
+    <h3>Geography and references</h3><p>District boundaries: <a href="https://www.geoboundaries.org/api/current/gbOpen/LKA/ADM2/" target="_blank" rel="noopener noreferrer">geoBoundaries LKA ADM2</a>, OpenStreetMap / Wambacher, 2017 geography, ODbL 1.0. Town reference: <a href="https://github.com/yasithsfonseka/SriLankaCitiesDatabase" target="_blank" rel="noopener noreferrer">SriLankaCitiesDatabase</a> (MIT). Town coordinates are never used as branch pins.</p>
+    <p>This application reads local static data. Source and Google Maps links require internet access. No backend or paid map API is required.</p>
     <button id="dialog-done" class="button button-primary">Back to the network<span data-icon="arrow-right"></span></button>
   </dialog>
+  <dialog id="location-dialog" aria-labelledby="location-dialog-title"><div class="dialog-heading"><span class="eyebrow">LOCATION DETAILS</span><button id="close-location" class="icon-button" aria-label="Close location details"><span data-icon="close"></span></button></div><div id="location-content"></div></dialog>
+  <noscript><p class="noscript-message">Enable JavaScript to use the interactive branch map and directory filters.</p></noscript>
 </body>
 </html>

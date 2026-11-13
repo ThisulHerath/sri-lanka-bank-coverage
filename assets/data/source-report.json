@@ -1,0 +1,133 @@
+{
+  "retrievedAt": "2026-11-13",
+  "records": 1246,
+  "banks": {
+    "com": {
+      "records": 322,
+      "branches": 276,
+      "selfServiceSites": 46,
+      "mapped": 310,
+      "pinPending": 12,
+      "districts": 25,
+      "districtNeedsReview": 0,
+      "closed": 0
+    },
+    "boc": {
+      "records": 593,
+      "branches": 593,
+      "selfServiceSites": 0,
+      "mapped": 83,
+      "pinPending": 510,
+      "districts": 25,
+      "districtNeedsReview": 0,
+      "closed": 1
+    },
+    "pb": {
+      "records": 331,
+      "branches": 331,
+      "selfServiceSites": 0,
+      "mapped": 0,
+      "pinPending": 331,
+      "districts": 24,
+      "districtNeedsReview": 10,
+      "closed": 0
+    }
+  },
+  "sources": [
+    {
+      "name": "Commercial Bank official locator",
+      "url": "https://www.combank.lk/branches",
+      "branchRecords": 276,
+      "machineLocationRecords": 322,
+      "uniqueLocations": 322
+    },
+    {
+      "name": "People’s Bank directory",
+      "url": "https://branches.lk/listing-cat/peoples-bank/",
+      "records": 331,
+      "coordinatesPublished": false
+    },
+    {
+      "name": "BOC directory",
+      "url": "https://branches.lk/listing-cat/bank-of-ceylon/",
+      "records": 593
+    },
+    {
+      "name": "BOC official locator (partial coordinate enrichment)",
+      "url": "https://www.boc.lk/branches",
+      "pagesRead": 20,
+      "recordsRead": 100,
+      "complete": false,
+      "limitation": "Further pages were blocked with HTTP 403."
+    }
+  ],
+  "notes": [
+    "A location count is not a count of individual machines.",
+    "Services not published by a source remain unknown.",
+    "No town-centre coordinates are used as branch pins.",
+    "Districts inferred from town references or bank regions are labelled in location details.",
+    "BOC official coordinate enrichment is partial because the locator blocked subsequent requests."
+  ],
+  "unresolvedDistricts": [
+    {
+      "id": "pb-1926",
+      "name": "Angunukolapelessa Branch",
+      "town": "Angunukolapelessa",
+      "address": "Ranna Road"
+    },
+    {
+      "id": "pb-1808",
+      "name": "Badulla Muthiyangana Branch",
+      "town": "Badulla Muthiyangana",
+      "address": "No: 01 B, Bazar street"
+    },
+    {
+      "id": "pb-1820",
+      "name": "Kokkatticholai Branch",
+      "town": "Kokkatticholai",
+      "address": "Peoples Bank, Kokkatticholai"
+    },
+    {
+      "id": "pb-2097",
+      "name": "Mankulam Branch",
+      "town": "Mankulam",
+      "address": "A-9 Road, Mankulam"
+    },
+    {
+      "id": "pb-1793",
+      "name": "Padawiya Branch",
+      "town": "Padawiya",
+      "address": "Bank Side"
+    },
+    {
+      "id": "pb-1967",
+      "name": "Panwila Branch",
+      "town": "Panwila",
+      "address": "No.75/26, Madolkele Road"
+    },
+    {
+      "id": "pb-2101",
+      "name": "Paranthan Branch",
+      "town": "Paranthan",
+      "address": "A-9 Road, Paranthan"
+    },
+    {
+      "id": "pb-2091",
+      "name": "Pulmude Branch",
+      "town": "Pulmude",
+      "address": "Illahiya Nagar, Pulmudai-01"
+    },
+    {
+      "id": "pb-2087",
+      "name": "Udawalawa Branch",
+      "town": "Udawalawa",
+      "address": "No-167/5, Thimbolketiya, Colombogeara"
+    },
+    {
+      "id": "pb-2051",
+      "name": "Udepussallawa Branch",
+      "town": "Udepussallawa",
+      "address": "55, St.Margrett’s Bazaar"
+    }
+  ]
+}
