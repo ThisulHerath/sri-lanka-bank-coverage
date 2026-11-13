@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="/vendor/leaflet-markercluster/MarkerCluster.css" />
   <link rel="stylesheet" href="/src/styles.css" />
   <link rel="stylesheet" href="/src/network.css" />
+  <link rel="stylesheet" href="/src/presentation.css" />
+  <link rel="stylesheet" href="/src/districts.css" />
   <script defer src="/vendor/leaflet/leaflet.js"></script>
   <script defer src="/vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
   <script type="module" src="/src/app.js"></script>
@@ -25,6 +27,8 @@
     <div class="sidebar-section">WORKSPACE</div>
     <nav aria-label="Main navigation">
       <a class="nav-item active" href="#main"><span data-icon="layout"></span>Network overview<span class="nav-active-dot"></span></a>
+      <a class="nav-item" href="#district-overview"><span data-icon="compare"></span>District comparison</a>
+      <a class="nav-item" href="#network-title"><span data-icon="pin"></span>Map & locations</a>
       <button class="nav-item" data-open-notes><span data-icon="document"></span>Data & methodology</button>
     </nav>
     <div class="sidebar-context">
@@ -45,53 +49,64 @@
     </header>
     <main id="main">
       <div class="page-heading">
-        <div><div class="eyebrow">NETWORK PLANNING & EXPANSION</div><h1>Branch network analysis<span>.</span></h1><p>One island. 25 districts. Explore every imported branch and self-service location.</p></div>
+        <div><div class="eyebrow">NETWORK PLANNING & EXPANSION</div><h1>Branch network analysis<span>.</span></h1><p>Compare three bank networks across 25 districts, then explore individual locations.</p></div>
         <button class="button button-white" data-open-notes><span data-icon="info"></span>About this data</button>
       </div>
 
+      <div class="overview-label"><span class="eyebrow">NATIONAL BRANCH NETWORK</span><span>2025 · CBSL provisional figures</span></div>
+      <section id="national-cards" class="national-cards" aria-label="Reported national branch totals"></section>
+      <nav class="quick-navigation" aria-label="Dashboard sections"><a href="#district-overview">01 District comparison ↓</a><a href="#network-title">02 Interactive map & locations ↓</a><span>Select a total or district to explore the map</span></nav>
+      <section id="district-overview" class="district-overview" aria-labelledby="district-title">
+        <div class="comparison-main"><div class="comparison-heading"><div><span class="eyebrow">DISTRICT COMPARISON</span><h2 id="district-title">The network, district by district</h2><p id="district-results" aria-live="polite">25 districts · Number of branches</p></div><label class="district-sort-label">Sort<select id="district-sort" aria-label="Sort districts"><option value="district">District A–Z</option><option value="total">Total: high to low</option><option value="com">Commercial: high to low</option><option value="boc">BOC: high to low</option><option value="pb">People’s: high to low</option></select></label></div>
+        <label class="district-search"><span data-icon="search"></span><input id="district-search" type="search" placeholder="Find a district…" aria-label="Find a district" /></label>
+        <div class="district-table-scroll" tabindex="0" role="region" aria-label="25 district branch counts, scroll for more districts"><table class="district-table"><caption class="sr-only">2025 provisional branch counts for Commercial Bank, Bank of Ceylon and People’s Bank, by district</caption><thead><tr><th scope="col">District</th><th scope="col">Commercial</th><th scope="col">BOC</th><th scope="col">People’s</th><th scope="col">Total</th><th scope="col"><span class="sr-only">Browse locations</span></th></tr></thead><tbody id="district-rows"></tbody><tfoot><tr id="district-totals"></tr></tfoot></table></div>
+        <p class="comparison-source">Source: <a href="https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/ess_2026_table7.8_e.xlsx" target="_blank" rel="noopener noreferrer">CBSL · Economic and Social Statistics 2026 · Table 7.8 ↗</a><br />2025 provisional · All banking outlets except Student Savings Units.</p></div>
+        <aside class="district-insights"><span class="eyebrow">NETWORK CONCENTRATION</span><h3>Top 5 districts</h3><p>Combined branches of the three banks</p><div id="top-districts"></div><div class="ranking-legend"><span><i style="background:#1769dc"></i>Commercial</span><span><i style="background:#bc8a18"></i>BOC</span><span><i style="background:#b74b6a"></i>People’s</span></div><div class="insight-callout"><strong>303 branches in Colombo</strong><p>The largest combined network, followed by Gampaha with 153 branches.</p></div><p class="scope-note">District totals describe the 2025 network. The location directory is a separate November 2026 snapshot and is incomplete. Counts are not individual map positions.</p></aside>
+      </section>
       <div class="demo-banner source-banner"><span class="demo-badge"><span></span>SOURCE SNAPSHOT</span><p id="data-status">Loading published directory records…</p><button data-open-notes aria-label="Read source information"><span data-icon="arrow-up-right"></span></button></div>
 
-      <section class="stats" aria-label="Current view summary" aria-live="polite">
+      <section id="directory-stats" class="stats" aria-label="Current view summary" aria-live="polite">
         <article class="stat-card"><div class="stat-top">Locations in view<span data-icon="building"></span></div><div class="stat-value" id="branch-count">—</div><div class="stat-bottom" id="location-breakdown">Published directory records</div></article>
         <article class="stat-card"><div class="stat-top">Districts represented<span data-icon="pin"></span></div><div class="stat-value"><span id="district-count">—</span><span class="stat-denominator"> / 25</span></div><div class="stat-bottom" id="district-summary">Districts in this filtered directory</div></article>
         <article class="stat-card"><div class="stat-top">Banks selected<span data-icon="layers"></span></div><div class="stat-value">0<span id="bank-count">1</span><span class="stat-denominator"> / 03</span></div><div class="stat-bottom" id="selected-summary">Commercial Bank</div></article>
         <article class="stat-card source-card"><div class="stat-top">Locations with map pins<span data-icon="database"></span></div><div class="stat-value" id="mapped-count">—</div><div class="stat-bottom" id="pending-summary">Published coordinates only</div></article>
       </section>
 
-      <section class="network-panel" aria-labelledby="network-title">
-        <div class="panel-heading"><div><h2 id="network-title">Explore Sri Lanka’s bank network</h2><p>Browse by district and town, or compare the three banks.</p></div><span class="panel-tag"><span class="small-dot green"></span>Sri Lanka only</span></div>
+      <section id="network-explorer" class="network-panel" aria-labelledby="network-title">
+        <div class="panel-heading"><div><h2 id="network-title">Explore Sri Lanka’s bank network</h2><p>Browse by district and town, or compare the three banks.</p></div><div class="panel-actions"><span class="panel-tag"><span class="small-dot green"></span>Sri Lanka only</span><button id="present-map" class="button button-primary" aria-pressed="false"><span data-icon="maximize"></span>Present map</button></div></div>
+        <div id="presentation-toolbar" aria-hidden="true"><div class="presentation-heading"><span class="eyebrow">COMMERCIAL BANK · NETWORK INTELLIGENCE</span><strong>Sri Lanka · Branch network</strong><span id="presentation-selection"></span></div><div class="presentation-actions"><span id="presentation-counts" aria-live="polite"></span><button id="fit-presentation" class="button button-white"><span data-icon="maximize"></span>Fit view</button><button id="exit-presentation" class="button button-primary"><span data-icon="close"></span>Exit full screen</button></div></div>
         <div class="explorer">
           <aside class="controls" aria-label="Network filters">
-            <div class="field-heading">VIEW MODE</div>
+            <label class="field-heading" for="map-data-mode">MAP DATA</label><div class="select-wrap map-data-select"><select id="map-data-mode"><option value="reported">Reported district totals · 2025</option><option value="locations">Individual locations · Nov 2026</option></select><span data-icon="chevron-down"></span></div><p id="map-data-explanation" class="map-data-explanation"></p><p id="reference-context" class="reference-context" hidden></p><div class="field-heading">BANK SELECTION</div>
             <div class="segmented" role="group" aria-label="View mode"><button id="single-mode" aria-pressed="true">Single bank</button><button id="compare-mode" aria-pressed="false"><span data-icon="compare"></span>Compare</button></div>
             <div class="control-label-row"><label class="field-heading">BANK NETWORKS</label><span id="selection-hint">Select one</span></div>
             <div id="bank-options" class="bank-options"></div>
             <div class="filter-divider"></div>
-            <div class="control-label-row"><span class="field-heading">LOCATION TYPE</span></div>
+            <div id="location-only-filters"><div class="control-label-row"><span class="field-heading">LOCATION TYPE</span></div>
             <div class="select-wrap type-select"><select id="location-type" aria-label="Location type"><option value="all">Branches & self-service sites</option><option value="branch">Branches only</option><option value="self-service">Self-service sites only</option></select><span data-icon="chevron-down"></span></div>
             <div class="control-label-row facility-heading"><span class="field-heading">FACILITIES</span><button data-open-notes class="text-help" aria-label="Facility definitions">What are these?</button></div>
             <div id="service-options" class="service-options" role="group" aria-label="Facility filter"></div>
             <p class="service-explanation" id="service-explanation">Facilities are shown where the source publishes them.</p>
             <div class="filter-divider"></div>
-            <label class="field-heading" for="district-filter">GEOGRAPHIC FOCUS</label>
+            </div><label class="field-heading" for="district-filter">GEOGRAPHIC FOCUS</label>
             <div class="select-wrap"><span data-icon="pin"></span><select id="district-filter"><option value="all">All districts</option></select><span data-icon="chevron-down"></span></div>
-            <div class="branch-list-heading"><h3>Districts & towns</h3><span id="list-count">—</span></div>
-            <label class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Town, branch, address or code" aria-label="Search locations" autocomplete="off" /></label>
+            <div class="branch-list-heading"><h3 id="directory-list-title">Districts & towns</h3><span id="list-count">—</span></div>
+            <label id="location-search-wrap" class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Town, branch, address or code" aria-label="Search locations" autocomplete="off" /></label>
             <div id="branch-list" class="branch-list" aria-live="polite"></div>
-            <div class="control-footnote"><span data-icon="info"></span><p>Map pins use published coordinates. Dotted district badges count records still awaiting a pin.</p></div>
+            <div class="control-footnote"><span data-icon="info"></span><p id="map-help">Map pins use published coordinates. Dotted district badges count records still awaiting a pin.</p></div>
           </aside>
 
           <div class="map-wrap">
             <div id="map" role="region" aria-label="Interactive map of Sri Lanka’s 25 districts"></div>
             <div class="map-heading"><span class="map-heading-icon" data-icon="globe"></span><div>Sri Lanka<small id="map-subtitle">Commercial Bank network</small></div></div>
             <button id="reset-map" class="map-reset" title="Reset map to Sri Lanka"><span data-icon="maximize"></span><span>Reset view</span></button>
-            <div class="map-legend"><span class="legend-title">BANK NETWORKS</span><div id="legend-items"></div><span class="legend-demo"><i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Dotted count = district total awaiting pins</span></div>
-            <div class="map-caption"><span id="map-geography">25 district boundaries</span><span>Click a district to explore its towns</span></div>
+            <div class="map-legend"><span class="legend-title">BANK NETWORKS</span><div id="legend-items"></div><span id="legend-explanation" class="legend-demo"><i class="legend-branch"></i> Branch <i class="legend-machine"></i> Self-service<br />Dotted count = district total awaiting pins</span></div>
+            <div class="map-caption"><span id="map-geography">25 district boundaries</span><span id="map-instruction">Click a district to explore its towns</span></div>
             <div class="map-north" aria-hidden="true"><span>N</span><svg viewBox="0 0 20 30"><path d="M10 1 19 28 10 22 1 28Z" fill="#28445f"/><path d="M10 1v21l9 6Z" fill="#92a8b7"/></svg></div>
             <div id="map-notice" class="map-notice" hidden></div>
           </div>
         </div>
-        <div class="panel-footer"><span><span data-icon="mouse"></span>Zoom clusters to see individual locations · Select a district, town or marker</span><span id="visible-summary">Loading locations…</span></div>
+        <div class="panel-footer"><span><span data-icon="mouse"></span><span id="map-footer-instruction">Zoom clusters to see individual locations · Select a district, town or marker</span></span><span id="visible-summary">Loading locations…</span></div>
       </section>
       <footer class="page-footer"><span>Commercial Bank · Branch Network Analysis</span><span>Directory snapshot: 13 Nov 2026<span class="footer-dot">·</span>Source-linked locations</span></footer>
     </main>
@@ -101,10 +116,10 @@
     <div class="dialog-heading"><span class="eyebrow">DATA & METHODOLOGY</span><button id="close-dialog" class="icon-button" aria-label="Close data notes"><span data-icon="close"></span></button></div>
     <h2 id="dialog-title">Published records. Clear provenance.</h2>
     <p>Snapshot collected on 13 November 2026. Counts describe the imported directories, rather than a certified current national network total.</p>
-    <div id="source-summary"></div>
+    <h3>Reported district network · 2025</h3><p>CBSL Economic and Social Statistics 2026, Table 7.8, reports 274 Commercial Bank, 672 BOC and 748 People’s Bank outlets across 25 districts (1,694 combined). Figures are provisional. The source defines the scope as “All Banking outlets except Student Savings Units”. These aggregates do not contain individual addresses or coordinates.</p><p><a href="https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/ess_2026_table7.8_e.xlsx" target="_blank" rel="noopener noreferrer">Open original CBSL workbook ↗</a></p><h3>Imported location directory · November 2026</h3><div id="source-summary"></div>
     <h3>Facilities</h3><dl class="service-definitions"><dt>ATM</dt><dd>Cash withdrawals only</dd><dt>CRM</dt><dd>Cash deposits and withdrawals</dd><dt>CDM</dt><dd>Cash deposits only</dd><dt>EDM</dt><dd>Envelope-based cheque deposits</dd><dt>ACDM</dt><dd>Automated cheque deposits</dd></dl>
     <p>A facility badge means the source lists that facility at the location. It is not the number of individual machines. Missing facility information means unknown availability.</p>
-    <h3>Locations and district assignments</h3><p>Pins retain the coordinates in the bank’s published direction links. These have not been independently surveyed. Missing coordinates and out-of-country or conflicting coordinates are withheld. Address search links open Google Maps searches and do not establish exact locations.</p>
+    <h3>Locations and district assignments</h3><p>Pins retain coordinates published in bank direction links, People’s Bank’s official map locator, or referenced Google Maps place listings. These have not been independently surveyed. Missing coordinates and out-of-country or conflicting coordinates are withheld. Address search links open Google Maps searches and do not establish exact locations.</p>
     <p>Districts are assigned from coordinates, source district fields, or a town reference. Some source fields and inferred assignments require review; each location shows its assignment method. Dotted badges are district summaries of records awaiting pins, not branch locations. Zero classified records is not evidence that a bank has no presence.</p>
     <h3>Geography and references</h3><p>District boundaries: <a href="https://www.geoboundaries.org/api/current/gbOpen/LKA/ADM2/" target="_blank" rel="noopener noreferrer">geoBoundaries LKA ADM2</a>, OpenStreetMap / Wambacher, 2017 geography, ODbL 1.0. Town reference: <a href="https://github.com/yasithsfonseka/SriLankaCitiesDatabase" target="_blank" rel="noopener noreferrer">SriLankaCitiesDatabase</a> (MIT). Town coordinates are never used as branch pins.</p>
     <p>This application reads local static data. Source and Google Maps links require internet access. No backend or paid map API is required.</p>

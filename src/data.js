@@ -13,11 +13,11 @@ async function readJSON(url) {
   return response.json();
 }
 export async function loadData() {
-  const [dataset, geography] = await Promise.all([
-    readJSON('/assets/data/locations.json'), readJSON('/assets/sri-lanka-districts.geojson'),
+  const [dataset, geography, districtCounts] = await Promise.all([
+    readJSON('/assets/data/locations.json'), readJSON('/assets/sri-lanka-districts.geojson'), readJSON('/assets/data/district-branch-counts.json'),
   ]);
   return {
-    branches: dataset.locations, metadata: dataset.metadata, geography,
+    branches: dataset.locations, metadata: dataset.metadata, geography, districtCounts,
     districts: geography.features.map(feature => feature.properties.name).sort(),
   };
 }

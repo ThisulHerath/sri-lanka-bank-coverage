@@ -1,0 +1,219 @@
+{
+  "year": 2025,
+  "status": "Provisional",
+  "source": "Central Bank of Sri Lanka · Economic and Social Statistics 2026 · Table 7.8",
+  "sourceUrl": "https://www.cbsl.gov.lk/en/statistics/economic-and-social-statistics/chapter-7",
+  "workbookUrl": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/ess_2026_table7.8_e.xlsx",
+  "worksheet": "Table 7.8",
+  "sourceCells": "B90:B114, D90:E114, G90:G114; national totals D115, E115, G115",
+  "definition": "All Banking outlets except Student Savings Units",
+  "verifiedOn": "2026-11-14",
+  "totals": {
+    "com": 274,
+    "boc": 672,
+    "pb": 748,
+    "total": 1694
+  },
+  "districts": [
+    {
+      "district": "Ampara",
+      "label": "Ampara",
+      "com": 4,
+      "boc": 25,
+      "pb": 28,
+      "total": 57
+    },
+    {
+      "district": "Anuradhapura",
+      "label": "Anuradhapura",
+      "com": 6,
+      "boc": 36,
+      "pb": 32,
+      "total": 74
+    },
+    {
+      "district": "Badulla",
+      "label": "Badulla",
+      "com": 6,
+      "boc": 29,
+      "pb": 36,
+      "total": 71
+    },
+    {
+      "district": "Batticaloa",
+      "label": "Batticaloa",
+      "com": 5,
+      "boc": 21,
+      "pb": 19,
+      "total": 45
+    },
+    {
+      "district": "Colombo",
+      "label": "Colombo",
+      "com": 78,
+      "boc": 102,
+      "pb": 123,
+      "total": 303
+    },
+    {
+      "district": "Galle",
+      "label": "Galle",
+      "com": 13,
+      "boc": 29,
+      "pb": 36,
+      "total": 78
+    },
+    {
+      "district": "Gampaha",
+      "label": "Gampaha",
+      "com": 43,
+      "boc": 48,
+      "pb": 62,
+      "total": 153
+    },
+    {
+      "district": "Hambantota",
+      "label": "Hambantota",
+      "com": 6,
+      "boc": 19,
+      "pb": 21,
+      "total": 46
+    },
+    {
+      "district": "Jaffna",
+      "label": "Jaffna",
+      "com": 12,
+      "boc": 40,
+      "pb": 29,
+      "total": 81
+    },
+    {
+      "district": "Kalutara",
+      "label": "Kalutara",
+      "com": 13,
+      "boc": 22,
+      "pb": 35,
+      "total": 70
+    },
+    {
+      "district": "Kandy",
+      "label": "Kandy",
+      "com": 16,
+      "boc": 44,
+      "pb": 52,
+      "total": 112
+    },
+    {
+      "district": "Kegalle",
+      "label": "Kegalle",
+      "com": 6,
+      "boc": 24,
+      "pb": 28,
+      "total": 58
+    },
+    {
+      "district": "Kilinochchi",
+      "label": "Kilinochchi",
+      "com": 2,
+      "boc": 8,
+      "pb": 5,
+      "total": 15
+    },
+    {
+      "district": "Kurunegala",
+      "label": "Kurunegala",
+      "com": 14,
+      "boc": 41,
+      "pb": 51,
+      "total": 106
+    },
+    {
+      "district": "Mannar",
+      "label": "Mannar",
+      "com": 1,
+      "boc": 8,
+      "pb": 5,
+      "total": 14
+    },
+    {
+      "district": "Matale",
+      "label": "Matale",
+      "com": 3,
+      "boc": 15,
+      "pb": 19,
+      "total": 37
+    },
+    {
+      "district": "Matara",
+      "label": "Matara",
+      "com": 10,
+      "boc": 23,
+      "pb": 29,
+      "total": 62
+    },
+    {
+      "district": "Monaragala",
+      "label": "Moneragala",
+      "com": 3,
+      "boc": 19,
+      "pb": 15,
+      "total": 37
+    },
+    {
+      "district": "Mullaitivu",
+      "label": "Mullaitivu",
+      "com": 2,
+      "boc": 9,
+      "pb": 7,
+      "total": 18
+    },
+    {
+      "district": "Nuwara Eliya",
+      "label": "Nuwara Eliya",
+      "com": 4,
+      "boc": 18,
+      "pb": 25,
+      "total": 47
+    },
+    {
+      "district": "Polonnaruwa",
+      "label": "Polonnaruwa",
+      "com": 2,
+      "boc": 15,
+      "pb": 17,
+      "total": 34
+    },
+    {
+      "district": "Puttalam",
+      "label": "Puttalam",
+      "com": 10,
+      "boc": 25,
+      "pb": 24,
+      "total": 59
+    },
+    {
+      "district": "Ratnapura",
+      "label": "Ratnapura",
+      "com": 10,
+      "boc": 27,
+      "pb": 30,
+      "total": 67
+    },
+    {
+      "district": "Trincomalee",
+      "label": "Trincomalee",
+      "com": 3,
+      "boc": 16,
+      "pb": 17,
+      "total": 36
+    },
+    {
+      "district": "Vavuniya",
+      "label": "Vavuniya",
+      "com": 2,
+      "boc": 9,
+      "pb": 3,
+      "total": 14
+    }
+  ]
+}

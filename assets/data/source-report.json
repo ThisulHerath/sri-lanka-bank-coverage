@@ -26,10 +26,10 @@
       "records": 331,
       "branches": 331,
       "selfServiceSites": 0,
-      "mapped": 0,
-      "pinPending": 331,
+      "mapped": 331,
+      "pinPending": 0,
       "districts": 24,
-      "districtNeedsReview": 10,
+      "districtNeedsReview": 0,
       "closed": 0
     }
   },
@@ -59,6 +59,36 @@
       "recordsRead": 100,
       "complete": false,
       "limitation": "Further pages were blocked with HTTP 403."
+    },
+    {
+      "name": "People’s Bank official map locator",
+      "url": "https://www.peoplesbank.lk/branch-service-center/",
+      "locatorOptions": 744,
+      "locationResponses": 331,
+      "matchedDirectoryRecords": 328,
+      "matchingMethods": {
+        "matching-phone": 319,
+        "exact-branch-name": 9
+      }
+    },
+    {
+      "name": "Google Maps People’s Bank place verification",
+      "url": "https://www.google.com/maps",
+      "matchedDirectoryRecords": 3,
+      "records": [
+        {
+          "id": "pb-1983",
+          "url": "https://www.google.com/maps/place/Peoples+Bank+Kegalle+Main+Branch/@7.2539979,80.3517294,17z/data=!4m6!3m5!1s0x3ae316b5cd631561:0xcb5f2d4824baa942!8m2!3d7.2539979!4d80.3517294!16s%2Fg%2F11b7835qrh"
+        },
+        {
+          "id": "pb-2075",
+          "url": "https://www.google.com/maps/place/People's+Bank/@6.5039585,80.6479016,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae3f011bd9069b5:0x97af18511dc2d468!8m2!3d6.5039585!4d80.6479016!16s%2Fg%2F1pv5vmjhy"
+        },
+        {
+          "id": "pb-1829",
+          "url": "https://www.google.com/maps/place/People's+Elegance+-+Premier+Branch+-+362/@6.916294,79.8705652,17z/data=!3m1!4b1!4m6!3m5!1s0x3ae2595a9dd125f9:0x4fc76bac4897e484!8m2!3d6.916294!4d79.8705652!16s%2Fg%2F11svh7df9j"
+        }
+      ]
     }
   ],
   "notes": [
@@ -66,21 +96,10 @@
     "Services not published by a source remain unknown.",
     "No town-centre coordinates are used as branch pins.",
     "Districts inferred from town references or bank regions are labelled in location details.",
-    "BOC official coordinate enrichment is partial because the locator blocked subsequent requests."
+    "BOC official coordinate enrichment is partial because the locator blocked subsequent requests.",
+    "People’s Bank positions are enriched from its official map locator and three Google Maps place listings using matching branch names or published contact numbers; the directory source links are retained."
   ],
   "unresolvedDistricts": [
-    {
-      "id": "pb-1926",
-      "name": "Angunukolapelessa Branch",
-      "town": "Angunukolapelessa",
-      "address": "Ranna Road"
-    },
-    {
-      "id": "pb-1808",
-      "name": "Badulla Muthiyangana Branch",
-      "town": "Badulla Muthiyangana",
-      "address": "No: 01 B, Bazar street"
-    },
     {
       "id": "com-182",
       "name": "Giriulla Branch",
@@ -92,54 +111,6 @@
       "name": "Karapitiya Branch",
       "town": "Karapitiya",
       "address": "NO 89, HIRIMBURA CROSS ROAD, KARAPITIYA."
-    },
-    {
-      "id": "pb-1820",
-      "name": "Kokkatticholai Branch",
-      "town": "Kokkatticholai",
-      "address": "Peoples Bank, Kokkatticholai"
-    },
-    {
-      "id": "pb-2097",
-      "name": "Mankulam Branch",
-      "town": "Mankulam",
-      "address": "A-9 Road, Mankulam"
-    },
-    {
-      "id": "pb-1793",
-      "name": "Padawiya Branch",
-      "town": "Padawiya",
-      "address": "Bank Side"
-    },
-    {
-      "id": "pb-1967",
-      "name": "Panwila Branch",
-      "town": "Panwila",
-      "address": "No.75/26, Madolkele Road"
-    },
-    {
-      "id": "pb-2101",
-      "name": "Paranthan Branch",
-      "town": "Paranthan",
-      "address": "A-9 Road, Paranthan"
-    },
-    {
-      "id": "pb-2091",
-      "name": "Pulmude Branch",
-      "town": "Pulmude",
-      "address": "Illahiya Nagar, Pulmudai-01"
-    },
-    {
-      "id": "pb-2087",
-      "name": "Udawalawa Branch",
-      "town": "Udawalawa",
-      "address": "No-167/5, Thimbolketiya, Colombogeara"
-    },
-    {
-      "id": "pb-2051",
-      "name": "Udepussallawa Branch",
-      "town": "Udepussallawa",
-      "address": "55, St.Margrett’s Bazaar"
     }
   ]
 }
