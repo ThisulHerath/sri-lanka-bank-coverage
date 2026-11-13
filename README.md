@@ -34,6 +34,13 @@ National totals: Commercial Bank **274**, BOC **672**, People's Bank **748**, co
 
 The 2025 reference statistics and the November 2026 directory snapshot differ in date and scope. A record-count difference is not a measured coverage gap. Missing directory entries/coordinates are not converted into artificial pins, and zero imported records does not mean zero bank presence. The code validates all row sums, bank totals and geometry keys.
 
+## Responsive navigation
+
+- Use the navigation button in the top bar to minimize the desktop sidebar to an icon rail; the preference is saved locally in that browser.
+- At tablet/phone widths, navigation opens in an accessible drawer with a backdrop, keyboard focus containment and Escape/close controls. Selecting a section closes the drawer.
+- At widths up to 900px, **Filters & locations** reveals the map controls and town directory in a scrollable panel. **Show map** closes the panel without changing the selection.
+- Touch layouts use larger controls and 16px search/select fields, a horizontally scrollable district comparison, safe-area spacing and a full-width map. Full-screen presentation reflows on portrait and landscape screens and uses a viewport layout when the browser does not support native fullscreen.
+
 ## Interface
 
 - Sri Lanka only: 25 local district polygons; optional OpenStreetMap streets/roads are masked outside Sri Lanka. Street tiles require an internet connection and use the browser’s normal tile caching. There is no tile prefetch or offline download feature.

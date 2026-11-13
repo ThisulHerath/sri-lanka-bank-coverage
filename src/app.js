@@ -3,8 +3,10 @@ import { icon, hydrateIcons } from './icons.js';
 import { setupMapPresentation } from './presentation.js';
 import { setupDistrictComparison } from './districts.js';
 import { setupMapBackground } from './map-background.js';
+import { setupResponsiveLayout } from './responsive.js';
 
 hydrateIcons();
+setupResponsiveLayout();
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const hasPin = location => Number.isFinite(location.lat) && Number.isFinite(location.lng) && location.coordinateStatus === 'published' && location.status !== 'closed';
@@ -294,7 +296,7 @@ function setupEvents() {
 
 function initializeMap() {
   if (!window.L?.markerClusterGroup) throw new Error('The local map library could not load. Reload to try again.');
-  map=L.map('map',{zoomControl:false,minZoom:5,maxZoom:18,scrollWheelZoom:true,zoomAnimation:!reducedMotion,fadeAnimation:!reducedMotion,maxBoundsViscosity:1});
+  map=L.map('map',{zoomControl:false,minZoom:5,maxZoom:18,zoomSnap:.25,zoomDelta:.5,scrollWheelZoom:true,zoomAnimation:!reducedMotion,fadeAnimation:!reducedMotion,maxBoundsViscosity:1});
   L.control.zoom({position:'topright'}).addTo(map);
   L.control.scale({position:'bottomright',imperial:false,maxWidth:70}).addTo(map);
   map.attributionControl.setPrefix('<a href="https://leafletjs.com/">Leaflet</a>');
