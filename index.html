@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#102642" />
+  <meta name="description" content="Explore and compare Sri Lanka’s bank branch networks from a Commercial Bank perspective. Interactive frontend demonstration using illustrative data." />
+  <title>Branch Network Analysis · Commercial Bank</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="/src/styles.css" />
+  <script defer src="/vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="/src/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to dashboard</a>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Commercial Bank network analysis home">
+      <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>COMMERCIAL BANK<small>NETWORK INTELLIGENCE</small></span>
+    </a>
+    <div class="sidebar-section">WORKSPACE</div>
+    <nav aria-label="Main navigation">
+      <a class="nav-item active" href="#main"><span data-icon="layout"></span>Network overview<span class="nav-active-dot"></span></a>
+      <button class="nav-item" data-open-notes><span data-icon="document"></span>Data & methodology</button>
+    </nav>
+    <div class="sidebar-context">
+      <span class="context-globe" data-icon="globe"></span>
+      <strong>Sri Lanka</strong>
+      <span>One network. A national view.</span>
+      <div class="context-rule"></div>
+      <span class="context-label">STRATEGIC PERSPECTIVE</span>
+      <p>Understand the network.<br />Explore the opportunity.</p>
+    </div>
+    <div class="sidebar-footer"><span class="avatar">CB</span><div>Strategy workspace<small>Branch network planning</small></div><span data-icon="shield"></span></div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumb">Network intelligence<span>/</span><strong>Overview</strong></div>
+      <div class="topbar-right"><span class="country"><span class="country-dot"></span>Sri Lanka</span><span class="topbar-divider"></span><span class="topbar-avatar">CB</span></div>
+    </header>
+    <main id="main">
+      <div class="page-heading">
+        <div><div class="eyebrow">NETWORK PLANNING & EXPANSION</div><h1>Branch network analysis<span>.</span></h1><p>A clearer view of our presence. A better perspective on what’s next.</p></div>
+        <button class="button button-white" data-open-notes><span data-icon="info"></span>About this data</button>
+      </div>
+
+      <div class="demo-banner"><span class="demo-badge"><span></span>DEMO DATA</span><p>Illustrative branch locations. Not verified bank coverage or expansion recommendations.</p><button data-open-notes aria-label="Read demo data methodology"><span data-icon="arrow-up-right"></span></button></div>
+
+      <section class="stats" aria-label="Current view summary" aria-live="polite">
+        <article class="stat-card"><div class="stat-top">Branches in view<span data-icon="building"></span></div><div class="stat-value" id="branch-count">18</div><div class="stat-bottom"><span class="small-dot blue"></span>Illustrative branch records</div></article>
+        <article class="stat-card"><div class="stat-top">Districts represented<span data-icon="pin"></span></div><div class="stat-value"><span id="district-count">18</span><span class="stat-denominator"> / 25</span></div><div class="stat-bottom">Districts with visible sample branches</div></article>
+        <article class="stat-card"><div class="stat-top">Banks selected<span data-icon="layers"></span></div><div class="stat-value">0<span id="bank-count">1</span><span class="stat-denominator"> / 03</span></div><div class="stat-bottom" id="selected-summary">Commercial Bank</div></article>
+        <article class="stat-card source-card"><div class="stat-top">Dataset<span data-icon="database"></span></div><div class="stat-value dataset-value">Demo preview</div><div class="stat-bottom"><span class="small-dot amber"></span>Awaiting verified branch data</div></article>
+      </section>
+
+      <section class="network-panel" aria-labelledby="network-title">
+        <div class="panel-heading"><div><h2 id="network-title">Explore the branch network</h2><p>Choose a bank or bring the networks together.</p></div><span class="panel-tag"><span class="small-dot green"></span>Interactive map</span></div>
+        <div class="explorer">
+          <aside class="controls" aria-label="Network filters">
+            <div class="field-heading">VIEW MODE</div>
+            <div class="segmented" role="group" aria-label="View mode"><button id="single-mode" aria-pressed="true">Single bank</button><button id="compare-mode" aria-pressed="false"><span data-icon="compare"></span>Compare</button></div>
+            <div class="control-label-row"><label class="field-heading">BANK NETWORKS</label><span id="selection-hint">Select one</span></div>
+            <div id="bank-options" class="bank-options"></div>
+            <div class="filter-divider"></div>
+            <label class="field-heading" for="district-filter">GEOGRAPHIC FOCUS</label>
+            <div class="select-wrap"><span data-icon="pin"></span><select id="district-filter"><option value="all">All districts</option></select><span data-icon="chevron-down"></span></div>
+            <div class="branch-list-heading"><h3>Branches in this view</h3><span id="list-count">18</span></div>
+            <label class="search-wrap"><span data-icon="search"></span><input id="branch-search" type="search" placeholder="Search a town or branch" aria-label="Search demo branches" autocomplete="off" /></label>
+            <div id="branch-list" class="branch-list" aria-live="polite"></div>
+            <div class="control-footnote"><span data-icon="info"></span><p>Locations represent sample town centres, not exact branch addresses.</p></div>
+          </aside>
+
+          <div class="map-wrap">
+            <div id="map" role="region" aria-label="Interactive Sri Lanka branch map"></div>
+            <div class="map-heading"><span class="map-heading-icon" data-icon="globe"></span><div>Sri Lanka<small id="map-subtitle">Commercial Bank network</small></div></div>
+            <button id="reset-map" class="map-reset" title="Reset map to Sri Lanka"><span data-icon="maximize"></span><span>Reset view</span></button>
+            <div class="map-legend"><span class="legend-title">BRANCH NETWORKS</span><div id="legend-items"></div><span class="legend-demo">Illustrative locations only</span></div>
+            <div class="map-north" aria-hidden="true"><span>N</span><svg viewBox="0 0 20 30"><path d="M10 1 19 28 10 22 1 28Z" fill="#28445f"/><path d="M10 1v21l9 6Z" fill="#92a8b7"/></svg></div>
+            <div id="map-notice" class="map-notice" hidden>Street tiles unavailable. The local Sri Lanka outline and branches remain interactive.</div>
+          </div>
+        </div>
+        <div class="panel-footer"><span><span data-icon="mouse"></span>Scroll to zoom · Drag to explore · Select a marker for details</span><span id="visible-summary">18 sample branches displayed</span></div>
+      </section>
+      <footer class="page-footer"><span>Commercial Bank · Branch Network Analysis</span><span>Planning preview<span class="footer-dot">·</span>Frontend demonstration</span></footer>
+    </main>
+  </div>
+
+  <dialog id="data-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-heading"><span class="eyebrow">DATA & METHODOLOGY</span><button id="close-dialog" class="icon-button" aria-label="Close data notes"><span data-icon="close"></span></button></div>
+    <h2 id="dialog-title">A foundation for better decisions.</h2>
+    <p>This frontend preview demonstrates how Sri Lanka’s bank networks can be explored and compared.</p>
+    <div class="dialog-callout"><strong>All branch records are illustrative.</strong><p>Names, counts, and coordinates are synthetic sample data near town centres. They do not represent verified branch locations, national network totals, or recommendations.</p></div>
+    <h3>What the figures mean</h3><p>Branch counts and district counts are calculated from the currently filtered sample records. A marker indicates a sample point; it does not establish the bank’s service coverage.</p>
+    <h3>Map sources</h3><p>The local country outline is from <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Street tiles are provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> and require an internet connection. Branch data stays in your browser.</p>
+    <h3>Ready for verified data</h3><p>The next dataset can provide bank, branch name, district, latitude, longitude, and existing or proposed status. No backend is required.</p>
+    <button id="dialog-done" class="button button-primary">Back to the network<span data-icon="arrow-right"></span></button>
+  </dialog>
+</body>
+</html>
