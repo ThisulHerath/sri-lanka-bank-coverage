@@ -87,7 +87,7 @@ function renderMarkers(visible) {
     const rows = visible.filter(row => row.district === name);
     const pending = rows.filter(row => !hasPin(row) && row.status !== 'closed');
     const selected = state.district === name;
-    layer.setStyle({fillColor:selected ? '#dbe9fc' : '#f5f8fc',color:selected ? '#5489c8' : '#bdcddd',weight:selected ? 1.8 : .8,fillOpacity:1});
+    layer.setStyle({fillColor:selected ? '#dbe9fc' : '#ffffff',color:selected ? '#5489c8' : '#9ab1c5',weight:selected ? 1.8 : 1,fillOpacity:1});
     layer.unbindTooltip();
     if (pending.length) {
       const marker = L.marker(layer.getBounds().getCenter(),{
@@ -110,15 +110,16 @@ function render() {
   const mapped = visible.filter(hasPin).length;
   const selectedBanks = [...state.selected].map(id=>banks[id]);
   const branchCount = visible.filter(row=>row.kind === 'branch').length;
+  const siteCount = visible.length - branchCount;
   $('#branch-count').textContent = count(visible.length);
-  $('#location-breakdown').textContent = `${count(branchCount)} branch records · ${count(visible.length-branchCount)} self-service sites`;
+  $('#location-breakdown').textContent = `${count(branchCount)} branch records · ${count(siteCount)} self-service ${siteCount === 1 ? 'site' : 'sites'}`;
   $('#district-count').textContent = new Set(visible.map(row=>row.district).filter(name=>districts.includes(name))).size;
   const unclassified = visible.filter(row=>row.district === 'Needs review').length;
   $('#district-summary').textContent = unclassified ? `${unclassified} district assignments need review` : 'Districts with classified records';
   $('#bank-count').textContent = state.selected.size;
   $('#selected-summary').textContent = state.selected.size === 1 ? selectedBanks[0].name : selectedBanks.map(bank=>bank.short).join(' · ');
   $('#mapped-count').textContent = count(mapped);
-  $('#pending-summary').textContent = `${count(visible.length-mapped)} records awaiting usable pins`;
+  $('#pending-summary').textContent = `${count(visible.length-mapped)} records without usable pins`;
   $('#map-subtitle').textContent = state.selected.size === 1 ? selectedBanks[0].name : 'Three-bank comparison';
   if (state.selected.size === 2) $('#map-subtitle').textContent = selectedBanks.map(bank=>bank.short).join(' + ');
   $('#map-geography').textContent = state.district === 'all' ? '25 district boundaries' : state.district;
@@ -151,6 +152,11 @@ function showLocation(id) {
   const bank = banks[row.bank];
   const status = row.status === 'closed' ? 'Closed / amalgamated' : hasPin(row) ? 'Published coordinates' : row.coordinateStatus.startsWith('rejected') ? 'Source coordinates need review · pin withheld' : 'Coordinates not published · pin pending';
   $('#location-content').innerHTML = `<div class="popup-bank" style="color:${bank.color}">${esc(bank.name)}${row.branchCode ? ` · ${esc(row.branchCode)}` : ''}</div><h2 id="location-dialog-title">${esc(row.name)}</h2><p class="location-subtitle">${esc(row.district)} district / ${esc(row.town)} · ${row.kind === 'branch' ? 'Branch' : 'Self-service site'}</p><p class="location-address">${esc(row.address || 'Address not published in this source.')}</p>${facilities(row,true)}<div class="coordinate-card ${hasPin(row) ? 'has-coordinate' : ''}"><strong>${esc(status)}</strong><p>${hasPin(row) ? `${row.lat}, ${row.lng}<br />Position from the bank’s published Google Maps direction link.` : 'Google Maps opens an address search. An exact branch position has not been confirmed.'}</p>${row.statusNote ? `<p>${esc(row.statusNote)}</p>` : ''}</div><dl class="location-facts"><dt>District assignment</dt><dd>${esc(assignmentLabels[row.districtBasis] || 'Requires review')}</dd>${row.phones.length ? `<dt>Telephone</dt><dd>${row.phones.map(phone=>esc(phone)).join('<br />')}</dd>` : ''}${row.hours ? `<dt>Published hours</dt><dd>${esc(row.hours)}</dd>` : ''}<dt>Data source</dt><dd><a href="${safeLink(row.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(row.sourceLabel)} ${icon('arrow-up-right')}</a></dd>${row.coordinateLookupSource ? `<dt>Coordinate reference</dt><dd><a href="${safeLink(row.coordinateLookupSource)}" target="_blank" rel="noopener noreferrer">BOC official locator ${icon('arrow-up-right')}</a></dd>` : ''}</dl><div class="location-actions"><a class="button button-primary" href="${safeLink(row.mapsUrl)}" target="_blank" rel="noopener noreferrer">${hasPin(row) ? 'Open published Google Maps location' : 'Search address in Google Maps'} ${icon('arrow-up-right')}</a>${hasPin(row) ? `<button class="button button-white" data-show-pin="${row.id}">Show on this map ${icon('pin')}</button>` : ''}</div><p class="snapshot-note">Source snapshot: 13 Nov 2026. Facility and opening-hour availability may change.</p>`;
+  if (row.coordinateReviewNote) {
+    const note = document.createElement('p');
+    note.textContent = row.coordinateReviewNote;
+    $('#location-content .coordinate-card').append(note);
+  }
   if (!$('#location-dialog').open) $('#location-dialog').showModal();
 }
 
@@ -219,7 +225,7 @@ function initializeMap() {
     districtByName.set(feature.properties.name,layer);
     layer.on('click',()=>focusDistrict(feature.properties.name));
     layer.on('mouseover',()=>layer.setStyle({weight:1.8,color:'#6d94c5'}));
-    layer.on('mouseout',()=>layer.setStyle({weight:state.district===feature.properties.name?1.8:.8,color:state.district===feature.properties.name?'#5489c8':'#bdcddd'}));
+    layer.on('mouseout',()=>layer.setStyle({weight:state.district===feature.properties.name?1.8:1,color:state.district===feature.properties.name?'#5489c8':'#9ab1c5'}));
   }}).addTo(map);
   markers=L.markerClusterGroup({maxClusterRadius:32,showCoverageOnHover:false,animate:!reducedMotion,spiderfyOnMaxZoom:true,iconCreateFunction:cluster=>{
     const colors=[...new Set(cluster.getAllChildMarkers().map(marker=>banks[marker.options.bankId].color))];

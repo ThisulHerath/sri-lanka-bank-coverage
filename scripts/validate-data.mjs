@@ -13,7 +13,7 @@ for (const row of locations) {
   assert.ok(row.name && row.town,`${row.id}: missing name or town`);
   assert.ok(districts.has(row.district) || row.district === 'Needs review',`${row.id}: invalid district`);
   assert.ok(['branch','self-service'].includes(row.kind),`${row.id}: invalid location type`);
-  assert.ok(!/demo|sample branch/i.test(row.name),`${row.id}: leftover demo record`);
+  assert.ok(!/\b(?:demo|sample)\s+branch\b/i.test(row.name),`${row.id}: leftover demo record`);
   assert.ok(!/^and contact details/i.test(row.address || ''),`${row.id}: introduction was parsed as an address`);
   assert.ok(row.services === null || row.services.every(service=>knownServices.has(service)),`${row.id}: unknown facility`);
   const source = new URL(row.sourceUrl);

@@ -36,13 +36,13 @@ The production build is the static `dist/` folder. Stop the development server b
 
 The demo generator has been replaced by **1,246 imported source records**.
 
-- **Commercial Bank:** 276 branch records and 46 additional self-service locations, 322 unique locations in total. All 322 have coordinates in the official direction links. The machine directory contains 322 site listings including branches; it does not mean 322 standalone ATMs or 322 individual machines. Source: https://www.combank.lk/branches
+- **Commercial Bank:** 276 branch records and 46 additional self-service locations, 322 unique locations in total. All 322 have coordinates in the official direction links; 320 are plotted and two conflicting positions (Karapitiya and Giriulla) are withheld for review. The machine directory contains 322 site listings including branches; it does not mean 322 standalone ATMs or 322 individual machines. Source: https://www.combank.lk/branches
 - **People’s Bank:** all 331 entries returned by the supplied Branches.lk category at collection time. The imported entries publish addresses but no coordinates, so they have no branch pins. They remain searchable with Google Maps address search links. Source: https://branches.lk/listing-cat/peoples-bank/
 - **BOC:** all 593 entries returned by the supplied Branches.lk category. The first 20 pages of the official BOC locator supplied 100 additional reference records and enriched 83 directory records with usable coordinates. Further official pages were blocked with HTTP 403. One confirmed closed/amalgamated directory entry is marked accordingly. Sources: https://branches.lk/listing-cat/bank-of-ceylon/ and https://www.boc.lk/branches
 
 These are source-snapshot counts, not a certified current national network total. The People’s Bank and BOC directories have incomplete geographic/facility data. Their machine availability remains **unknown**, rather than being assumed absent or fabricated.
 
-The application does not claim complete exact-location coverage for all three banks. It makes the remaining work visible: 510 BOC records and 331 People’s Bank records have no usable map pin in this snapshot. The app does not infer coverage gaps or expansion potential from this incomplete dataset.
+The application does not claim complete exact-location coverage for all three banks. It makes the remaining work visible: two Commercial Bank records, 510 BOC records and 331 People’s Bank records have no usable map pin in this snapshot. The app does not infer coverage gaps or expansion potential from this incomplete dataset.
 
 ## Coordinate and district quality
 
@@ -50,7 +50,7 @@ Map coordinates are copied unchanged from published bank Google Maps direction l
 
 For unlocated records, **Search address in Google Maps** explicitly opens a text search. Such a link does not establish a verified position. No town-centre coordinates are substituted for bank locations.
 
-District assignments use, in order, published coordinates within district geometry, explicit source district fields, town reference matches, and selected source-address or bank-region inferences. The assignment method appears in each location’s details. Source district fields and inferred assignments may themselves require review. Thirteen People’s Bank district assignments remain unresolved in this snapshot and appear in a separate **Needs review** group. All 25 administrative districts remain available in the selector and hierarchy. A district with zero classified records must not be read as a bank having no presence there.
+District assignments use published coordinates within district geometry, explicit source district fields, town reference matches, and selected source-address or bank-region inferences. Town reference coordinates are checked against the district geometry rather than relying solely on reference IDs. Conflicts supported by multiple locality references withhold the two Commercial Bank pins and their district assignments. The assignment method appears in each location’s details. Source district fields and inferred assignments may themselves require review. Ten People’s Bank district assignments and the two Commercial Bank conflicts remain in a separate **Needs review** group. All 25 administrative districts remain available in the selector and hierarchy. A district with zero classified records must not be read as a bank having no presence there.
 
 `assets/data/source-report.json` contains counts, source URLs, collection date, limitations, and unresolved district records. `assets/data/locations.json` contains the records and the same report metadata.
 

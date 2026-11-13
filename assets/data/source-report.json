@@ -6,10 +6,10 @@
       "records": 322,
       "branches": 276,
       "selfServiceSites": 46,
-      "mapped": 310,
-      "pinPending": 12,
+      "mapped": 320,
+      "pinPending": 2,
       "districts": 25,
-      "districtNeedsReview": 0,
+      "districtNeedsReview": 2,
       "closed": 0
     },
     "boc": {
@@ -80,6 +80,18 @@
       "name": "Badulla Muthiyangana Branch",
       "town": "Badulla Muthiyangana",
       "address": "No: 01 B, Bazar street"
+    },
+    {
+      "id": "com-182",
+      "name": "Giriulla Branch",
+      "town": "Giriulla",
+      "address": "NO 105, KURUNEGALA ROAD, GIRIULLA."
+    },
+    {
+      "id": "com-135",
+      "name": "Karapitiya Branch",
+      "town": "Karapitiya",
+      "address": "NO 89, HIRIMBURA CROSS ROAD, KARAPITIYA."
     },
     {
       "id": "pb-1820",
