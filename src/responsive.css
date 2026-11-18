@@ -5,7 +5,7 @@
 @media(max-width:1100px){
   :root{--navigation-width:0px}.workspace{margin-left:0}.topbar{height:72px;padding-inline:24px;position:relative}.sidebar{display:flex;align-items:stretch;position:fixed;inset:0 auto 0 0;width:min(300px,calc(100vw - 44px));height:100dvh;padding:28px 20px 0;transform:translateX(-100%);box-shadow:12px 0 40px #10264225}.sidebar .brand{margin:5px 0 0;gap:10px;font-size:11px}.sidebar .brand-name{display:block}.sidebar .brand small{font-size:7px}.sidebar .sidebar-section{display:block;margin:38px 12px 15px;font-size:10px}.sidebar .nav-label{display:inline}.sidebar .nav-active-dot{display:block}.sidebar nav{width:100%}.sidebar .nav-item{display:flex;width:100%;height:auto;min-height:48px;font-size:13px;justify-content:flex-start;padding:13px 12px;gap:12px}.sidebar .nav-item svg{width:19px;height:19px}.sidebar .sidebar-context{display:block;margin:32px 12px 22px}.sidebar .sidebar-footer{display:flex;margin:auto -20px 0;padding:20px;border-top:1px solid #29435e}.sidebar-close{display:grid;position:absolute;top:20px;right:13px;width:36px;height:36px;border-color:#37516d;background:#203c59;color:white}.sidebar .brand{padding-right:28px;font-size:10px}.sidebar .brand-symbol{width:25px}.navigation-open{overflow:hidden}.navigation-open .sidebar{transform:translateX(0)}main{padding:28px 24px 0;max-width:1200px}.stats{gap:12px}.stat-bottom{font-size:10px}.stat-top{font-size:11px}.explorer{grid-template-columns:280px minmax(0,1fr)}.controls{padding:20px;height:820px}.map-wrap{min-height:820px}.bank-name{font-size:11px}.field-heading{font-size:10px}.select-wrap select{font-size:14px;min-height:44px}.service-options>button{min-height:40px;font-size:11px}.segmented button{min-height:42px;font-size:12px}.source-banner p{font-size:11px}.panel-heading h2{font-size:16px}.panel-heading p{font-size:12px;line-height:1.6}.panel-heading{padding:20px}.map-view-buttons>button,.panel-actions .button{min-height:44px;font-size:11px}.national-card>span{font-size:12px}.national-card>small{font-size:11px}.comparison-heading h2{font-size:20px}.comparison-heading p,.district-insights>p{font-size:12px}.district-sort-label{font-size:11px}.district-sort-label select{font-size:13px;min-height:44px}.district-search input{font-size:16px}.district-search{min-height:46px}.district-table{font-size:13px}.district-table thead th{font-size:11px}.district-table th,.district-table td{padding:0 12px;height:46px}.district-table tbody button{min-height:44px;min-width:36px}.district-table .location-link{font-size:11px}.comparison-source{font-size:10px}.district-table-scroll{max-height:400px}.ranking-label{font-size:12px}.ranking-label strong{font-size:13px}.ranking-legend{font-size:10px}.scope-note,.insight-callout p{font-size:11px!important}.insight-callout strong{font-size:13px}.page-footer{font-size:10px}.map-heading>div{font-size:13px}.map-heading small{font-size:10px}.legend-item{font-size:11px}.legend-demo{font-size:9px}.leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:40px!important}.leaflet-control-attribution{font-size:9px!important}.branch-list-heading h3{font-size:13px}.district-group>summary{font-size:13px;min-height:44px}.town-group>summary{font-size:13px;min-height:44px}.sourced-row strong{font-size:13px}.sourced-row small{font-size:11px}.pin-status,.facility-unknown{font-size:10px}.facility-badge{font-size:10px!important}.control-footnote p{font-size:11px}.service-explanation,.reference-context,.map-data-explanation{font-size:11px}.pin-map-options label{font-size:12px;min-height:36px}.pin-map-options input{width:18px;height:18px}.pin-map-options>small{font-size:10px}.search-wrap{min-height:44px}.search-wrap input{font-size:16px}.source-cards strong{font-size:13px}.source-cards span{font-size:12px}.source-cards small{font-size:11px}
 }
-@media(max-width:900px){
+@media(max-width:1100px){
   #filters-toggle{display:inline-flex}.explorer{display:flex;flex-direction:column}.controls{height:auto;max-height:70dvh;overflow-y:auto;overscroll-behavior:contain;border-right:0;border-bottom:1px solid var(--border);padding:18px 20px}.mobile-filter-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 18px;font-size:14px;color:#3c5e7e}.mobile-filter-heading .button{min-height:44px;font-size:12px}.controls>.field-heading:first-child{display:block}.bank-options{grid-template-columns:repeat(3,minmax(0,1fr))}.bank-option{min-height:90px;padding:12px}.bank-name{font-size:12px}.bank-logo{width:29px;height:29px;font-size:10px}.bank-radio{width:17px;height:17px}.bank-radio svg{width:12px;height:12px}.branch-list,.reported-view .branch-list{height:250px;margin:12px 0}.branch-list-heading,.search-wrap,.control-footnote{display:flex}.service-options{grid-template-columns:repeat(6,minmax(0,1fr))}.service-options>button{min-height:44px}.map-wrap{height:clamp(480px,70svh,740px);min-height:480px}.panel-actions{gap:8px}.panel-heading{display:block}.panel-actions{margin-top:16px;justify-content:flex-start}.panel-footer{font-size:11px;line-height:1.7;padding:14px;align-items:flex-start;flex-direction:column}.panel-footer>span:first-child{max-width:100%;font-size:10px}.stat-value{font-size:30px}.stat-denominator{font-size:13px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-card{padding:16px}.stat-top{font-size:12px}.stat-bottom{font-size:11px}.map-caption{font-size:10px;max-width:180px}.map-notice{font-size:11px;left:12px;right:12px;bottom:225px;line-height:1.6}.map-legend{bottom:32px;left:14px;min-width:180px}.legend-title{font-size:9px}.legend-item{font-size:11px}.legend-demo{font-size:9px}.map-north{right:22px;bottom:52px}.map-heading{top:14px;left:14px}.map-caption{top:94px;left:16px}.map-heading small{max-width:200px}.map-reset{top:16px;right:16px;min-width:44px;min-height:44px}.leaflet-control-zoom{margin:78px 16px 0 0!important}.popup-title{font-size:18px}.popup-bank,.popup-district{font-size:11px}.popup-address{font-size:12px!important}.popup-coordinates{font-size:11px!important}.popup-actions button,.popup-actions a{font-size:11px;min-height:40px}.popup-actions{gap:12px}.map-view-buttons>button{font-size:12px}.national-card>strong{font-size:33px}.quick-navigation{font-size:12px;gap:16px}.quick-navigation>a{min-height:44px;display:flex;align-items:center}.location-actions .button{min-height:46px}.location-facts{font-size:12px;grid-template-columns:100px minmax(0,1fr)}.location-facts dd{overflow-wrap:anywhere}.coordinate-card strong{font-size:13px}.coordinate-card p{font-size:12px}.icon-button{min-width:44px;min-height:44px}.snapshot-note{font-size:11px!important}
 }
 @media(max-width:600px){
@@ -22,3 +22,131 @@
 @media(max-width:1100px){.sidebar{padding-top:calc(28px + env(safe-area-inset-top))}.sidebar-close{top:calc(20px + env(safe-area-inset-top))}.sidebar .sidebar-footer{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.mobile-filter-heading{position:sticky;top:-18px;background:#fff;z-index:2;padding:8px 0}}
 @media(max-width:1100px){html{scroll-padding-top:100px}.topbar{position:sticky;top:0;z-index:1150}.network-panel{scroll-margin-top:0}}
 @media(prefers-reduced-motion:reduce){.workspace,.sidebar{transition:none}}
+
+/* Let content reflow as well as resizing the navigation. */
+main, .page-heading > div, .panel-heading > div, .comparison-main,
+.presentation-heading, .national-card, .stat-card { min-width: 0; }
+main { width: 100%; }
+.page-heading h1 { font-size: clamp(25px, 2.1vw, 34px); }
+.district-mobile-list, .district-mobile-total, .topbar-map-link,
+.legend-toggle { display: none; }
+.district-mobile-card button { -webkit-appearance: none; }
+.map-wrap { min-width: 0; }
+.leaflet-popup-content { max-width: min(280px, calc(100vw - 80px)); }
+.popup-address, .popup-title, .location-address { overflow-wrap: anywhere; }
+dialog { max-width: calc(100vw - 24px); }
+
+@media (max-width: 1100px) {
+  .topbar-map-link {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; padding: 8px 12px; border-radius: 6px;
+    background: #edf4ff; color: #2767b3; font-size: 12px; font-weight: 650;
+  }
+  .topbar-map-link svg { width: 16px; height: 16px; }
+  .district-overview { grid-template-columns: minmax(0, 1fr); }
+  .district-insights { border-left: 0; border-top: 1px solid #e7edf4; }
+  .map-wrap {
+    height: clamp(360px, calc(100svh - 210px), 720px);
+    min-height: 360px;
+  }
+  .controls { max-height: min(680px, 72dvh); }
+  .panel-actions { min-width: 0; }
+  .panel-actions .button { flex-shrink: 0; }
+  .select-wrap select, .district-sort-label select { font-size: 16px; }
+  .map-data-select select { font-size: 16px; }
+  .page-heading > .button { flex-shrink: 0; }
+  body.map-presentation .map-wrap { height: 100%; min-height: 0; }
+}
+
+@media (max-width: 640px) {
+  .topbar { gap: 10px; }
+  .topbar-start { flex: 1; gap: 10px; }
+  .topbar-right { flex-shrink: 0; gap: 0; }
+  .topbar-right .country, .topbar-right .topbar-divider,
+  .topbar-right .topbar-avatar { display: none; }
+  .breadcrumb { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+  .breadcrumb > span, .breadcrumb > strong { display: none; }
+  .page-heading h1 { max-width: none; font-size: clamp(25px, 6.4vw, 31px); }
+  .national-card { min-height: 132px; }
+  .national-card > strong { font-size: clamp(29px, 8vw, 35px); }
+  .national-card > span, .national-card > small { overflow-wrap: anywhere; }
+  .overview-label > span:last-child { flex-shrink: 0; max-width: 135px; }
+  .comparison-heading { flex-direction: column; align-items: stretch; }
+  .comparison-heading h2 { font-size: 19px; }
+  .district-sort-label { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .district-sort-label select { width: calc(100% - 42px); max-width: none; }
+  .district-table-scroll { display: none; }
+  .district-mobile-list {
+    display: grid; gap: 12px; max-height: min(620px, 74svh); overflow-y: auto;
+    scrollbar-width: thin; padding: 2px 2px 8px;
+  }
+  .district-mobile-card {
+    border: 1px solid #e1e9f2; border-radius: 8px; padding: 12px;
+    background: #fff; min-width: 0;
+  }
+  .district-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .district-card-heading > button {
+    display: flex; align-items: center; gap: 8px; min-height: 40px;
+    background: none; padding: 0; font-weight: 650; font-size: 14px; color: #294e73;
+  }
+  .district-card-heading > button > span { color: #9cb1c7; font-size: 12px; }
+  .district-card-heading > span { color: #7d91a7; font-size: 11px; white-space: nowrap; }
+  .district-card-banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin: 5px 0 9px; }
+  .district-card-banks > button {
+    display: grid; gap: 7px; text-align: left; padding: 11px 8px; min-height: 70px;
+    border: 1px solid #e5ecf4; border-radius: 5px; background: #f8fafd; color: var(--card-bank);
+  }
+  .district-card-banks > button > span { font-size: 10px; font-weight: 600; }
+  .district-card-banks strong { font-size: 23px; line-height: 1.1; }
+  .district-card-locations {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    min-height: 44px; width: 100%; padding: 8px 0 0; border-top: 1px solid #edf1f6;
+    font-size: 11px; text-align: left; background: none; color: #5d7d9d;
+  }
+  .district-mobile-total { display: flex; justify-content: space-between; gap: 10px; padding: 14px 8px; margin-top: 8px; background: #edf4fc; border-radius: 5px; font-size: 11px; color: #5d7896; }
+  .district-mobile-total strong { color: #2a4d71; white-space: nowrap; }
+  .district-mobile-empty { font-size: 13px; line-height: 1.7; padding: 24px 10px; color: #8b9db0; text-align: center; }
+  .comparison-source { line-height: 1.8; }
+  .panel-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .filters-toggle-label { overflow-wrap: anywhere; }
+  .bank-options { gap: 7px; }
+  .bank-option { min-width: 0; padding: 9px; }
+  .bank-option > span:nth-child(2) { min-width: 0; }
+  .bank-name { overflow-wrap: anywhere; }
+  .map-heading { max-width: calc(100% - 85px); }
+  .map-caption { max-width: 150px; }
+  .map-legend, body.map-presentation .map-legend {
+    min-width: 0; max-width: min(240px, calc(100% - 76px));
+    left: 12px; bottom: 34px; padding: 0;
+  }
+  .legend-toggle {
+    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+    min-height: 44px; width: 100%; padding: 11px 13px; border-radius: 6px;
+    background: white; color: #526e8c; font-size: 11px; font-weight: 600;
+  }
+  .legend-toggle svg { width: 14px; height: 14px; }
+  .legend-toggle[aria-expanded=true] svg { transform: rotate(180deg); }
+  #legend-body { padding: 0 13px 13px; }
+  #legend-body .legend-title { display: none; }
+  .map-notice, body.map-presentation .map-notice { bottom: 88px; left: 12px; right: 12px; }
+  .map-legend-expanded .map-notice, body.map-presentation.map-legend-expanded .map-notice { bottom: 215px; }
+  .popup-actions { flex-wrap: wrap; }
+  .popup-actions button, .popup-actions a { min-height: 44px; }
+  .presentation-actions { min-width: 0; }
+  .presentation-actions .button { overflow-wrap: anywhere; }
+  .page-footer > span:last-child { max-width: none; width: 100%; text-align: left; }
+}
+
+@media (max-width: 360px) {
+  .page-heading h1 { font-size: 24px; }
+  .page-heading > .button { margin-top: 24px; }
+  .national-card { padding: 13px 10px; }
+  .national-card > span { font-size: 11px; }
+  .national-card > small { font-size: 9px; }
+  .stat-card { padding: 13px 10px; }
+  .stat-top { font-size: 10px; }
+  .stat-bottom { font-size: 10px; overflow-wrap: anywhere; }
+  .district-mobile-card { padding: 10px; }
+  .district-card-heading > button { font-size: 13px; }
+  .district-card-banks > button { padding: 10px 6px; }
+}

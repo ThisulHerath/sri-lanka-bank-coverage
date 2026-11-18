@@ -7,7 +7,7 @@ export function setupResponsiveLayout() {
   const close = document.querySelector('#sidebar-close');
   const backdrop = document.querySelector('#sidebar-backdrop');
   const drawerQuery = matchMedia('(max-width: 1100px)');
-  const filterQuery = matchMedia('(max-width: 900px)');
+  const filterQuery = matchMedia('(max-width: 1100px)');
   const controls = document.querySelector('#network-controls');
   const filterToggle = document.querySelector('#filters-toggle');
   let collapsed = false;
@@ -89,6 +89,18 @@ export function setupResponsiveLayout() {
     document.querySelector('#network-explorer').scrollIntoView({block:'start',behavior:'instant'});
   });
   filterQuery.addEventListener('change',renderFilters);
+  const legendQuery = matchMedia('(max-width: 640px)');
+  const legendToggle = document.querySelector('#legend-toggle');
+  let legendExpanded = false;
+  function renderLegend() {
+    const expanded = !legendQuery.matches || legendExpanded;
+    document.querySelector('#legend-body').hidden = !expanded;
+    legendToggle.setAttribute('aria-expanded',String(expanded));
+    body.classList.toggle('map-legend-expanded',expanded);
+  }
+  legendToggle.addEventListener('click',()=>{legendExpanded=!legendExpanded;renderLegend();});
+  legendQuery.addEventListener('change',renderLegend);
   renderNavigation();
   renderFilters();
+  renderLegend();
 }

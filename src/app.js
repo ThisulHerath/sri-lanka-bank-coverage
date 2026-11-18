@@ -13,6 +13,7 @@ const hasPin = location => Number.isFinite(location.lat) && Number.isFinite(loca
 const state = { mapMode:'locations', groupPins:false, streetMap:true, mode:'single', selected:new Set(['com']), district:'all', query:'', service:'all', kind:'branch', activeBranch:null, openDistricts:new Set(), openTowns:new Set() };
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let branches = [], districts = [], metadata, geography, map, markers, districtLayer, pendingLayer, presentation, districtCounts, pinLayer, clusterLayer, background;
+let userPositionedMap = false;
 const markerById = new Map(), districtByName = new Map();
 const count = value => value.toLocaleString('en-LK');
 const assignmentLabels = {
@@ -122,7 +123,7 @@ function renderMarkers(visible) {
       icon:L.divIcon({className:`branch-pin ${row.kind === 'self-service' ? 'machine-pin' : ''}`,html:`<span style="--bank-color:${bank.color}"></span>`,iconSize:[22,22],iconAnchor:[11,11],popupAnchor:[0,-6]}),
       title:`${bank.name} — ${row.name}`,alt:`${bank.name} — ${row.name}`,riseOnHover:true,
     }).bindPopup(`<div class="popup-bank" style="color:${bank.color}">${esc(bank.name)}</div><h3 class="popup-title">${esc(row.name)}</h3><div class="popup-district">${esc(row.town)} · ${esc(row.district)}</div>${facilities(row)}<p class="popup-coordinates">${row.lat.toFixed(6)}, ${row.lng.toFixed(6)}</p><p class="popup-address">${esc(row.address || 'Address not published')}</p><div class="popup-actions"><button data-detail="${row.id}">Location details ${icon('arrow-right')}</button><a href="${safeLink(row.mapsUrl)}" target="_blank" rel="noopener noreferrer">Google Maps ${icon('arrow-up-right')}</a></div>`,{maxWidth:300,autoPanPaddingTopLeft:[15,90],autoPanPaddingBottomRight:[20,35]});
-    marker.on('click', () => { state.activeBranch = row.id; });
+    marker.on('click', () => { state.activeBranch = row.id; userPositionedMap = true; });
     markerById.set(row.id,marker);
     return marker;
   });
@@ -188,13 +189,14 @@ function render() {
   presentation?.refresh();
 }
 
-function fitVisible() {
+function fitVisible({animate = !reducedMotion} = {}) {
   if (!map) return;
+  userPositionedMap = false;
   const selected = districtByName.get(state.district);
-  if (selected) map.fitBounds(selected.getBounds(),{padding:[55,70],maxZoom:11,animate:!reducedMotion});
+  if (selected) map.fitBounds(selected.getBounds(),{padding:[55,70],maxZoom:11,animate});
   else if (state.query) {
     const mapped = visibleBranches().filter(hasPin);
-    if (mapped.length) map.fitBounds(L.latLngBounds(mapped.map(row=>[row.lat,row.lng])),{padding:[80,90],maxZoom:14,animate:!reducedMotion});
+    if (mapped.length) map.fitBounds(L.latLngBounds(mapped.map(row=>[row.lat,row.lng])),{padding:[80,90],maxZoom:14,animate});
     else map.fitBounds(districtLayer.getBounds(),{padding:[30,35],animate:false});
   } else map.fitBounds(districtLayer.getBounds(),{padding:[30,35],animate:false});
 }
@@ -284,6 +286,7 @@ function setupEvents() {
     const marker=markerById.get(button.dataset.showPin);
     if(!marker)return;
     $('#location-dialog').close();
+    userPositionedMap = true;
     if (state.groupPins) markers.zoomToShowLayer(marker,()=>{map.setView(marker.getLatLng(),Math.max(map.getZoom(),16));marker.openPopup();});
     else { map.setView(marker.getLatLng(),16,{animate:!reducedMotion}); marker.openPopup(); }
   });
@@ -317,7 +320,21 @@ function initializeMap() {
   pendingLayer=L.layerGroup().addTo(map);
   map.setMaxBounds(districtLayer.getBounds().pad(.65));
   fitVisible();
-  new ResizeObserver(()=>map.invalidateSize({animate:false})).observe($('#map'));
+  map.on('dragstart',()=>{userPositionedMap=true;});
+  $('#map').addEventListener('wheel',()=>{userPositionedMap=true;},{passive:true});
+  $('#map').addEventListener('touchstart',event=>{if(event.touches.length>1)userPositionedMap=true;},{passive:true});
+  $('#map').addEventListener('click',event=>{if(event.target.closest('.leaflet-control-zoom'))userPositionedMap=true;},true);
+  let resizeFrame;
+  new ResizeObserver(()=>{
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame=requestAnimationFrame(()=>{
+      const center=map.getCenter(), zoom=map.getZoom();
+      map.invalidateSize({animate:false,pan:false});
+      // Refit automatic views after rotation/sidebar changes; preserve manual exploration.
+      if (!userPositionedMap) fitVisible({animate:false});
+      else map.setView(center,zoom,{animate:false});
+    });
+  }).observe($('#map'));
 }
 
 const dataDialog=$('#data-dialog'),locationDialog=$('#location-dialog');

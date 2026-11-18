@@ -38,8 +38,10 @@ The 2025 reference statistics and the November 2026 directory snapshot differ in
 
 - Use the navigation button in the top bar to minimize the desktop sidebar to an icon rail; the preference is saved locally in that browser.
 - At tablet/phone widths, navigation opens in an accessible drawer with a backdrop, keyboard focus containment and Escape/close controls. Selecting a section closes the drawer.
-- At widths up to 900px, **Filters & locations** reveals the map controls and town directory in a scrollable panel. **Show map** closes the panel without changing the selection.
-- Touch layouts use larger controls and 16px search/select fields, a horizontally scrollable district comparison, safe-area spacing and a full-width map. Full-screen presentation reflows on portrait and landscape screens and uses a viewport layout when the browser does not support native fullscreen.
+- At widths up to 1100px, **Filters & locations** reveals the map controls and town directory in a scrollable panel. **Show map** closes the panel without changing the selection.
+- Touch layouts use larger controls and 16px search/select fields, district comparison cards on phones, a scrollable comparison table on larger screens, safe-area spacing and a full-width map. Full-screen presentation reflows on portrait and landscape screens and uses a viewport layout when the browser does not support native fullscreen.
+
+On phones up to 640px, district cards retain search, sorting, per-bank counts and location navigation without sideways scrolling. The map legend is collapsed by default and can be expanded on demand. A persistent Map shortcut returns to the explorer. Automatic map views refit after screen rotation or sidebar resizing; manually positioned views retain their zoom and centre.
 
 ## Interface
 
