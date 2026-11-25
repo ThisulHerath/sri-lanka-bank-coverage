@@ -6,7 +6,7 @@ export async function setupComparisonMap(data){
  const $=s=>document.querySelector(s),ids=Object.keys(banks),selected=new Set(ids),districts=new Map(data.districts.map(row=>[row.district,row]));
  const get=async url=>{const r=await fetch(url);if(!r.ok)throw Error('Map data unavailable');return r.json();};
  const [geometry,directory]=await Promise.all([get('/assets/sri-lanka-districts.geojson'),get('/assets/data/locations.json')]);
- let district='all',mode='districts',streets=false,presenting=false,previousFocus,previousScroll=0;
+ let district='all',mode='districts',streets=false,presenting=false,previousFocus,previousScroll=0,manualView=false;
  const map=L.map('comparison-map',{minZoom:5,maxZoom:17,zoomSnap:.25,zoomControl:false,maxBoundsViscosity:1});
  L.control.zoom({position:'topright'}).addTo(map);L.control.scale({position:'bottomright',imperial:false}).addTo(map);
  map.attributionControl.addAttribution('geoBoundaries · OSM / Wambacher · ODbL');
@@ -17,7 +17,11 @@ export async function setupComparisonMap(data){
  const pinLayer=L.markerClusterGroup({maxClusterRadius:42,showCoverageOnHover:false,animate:false,iconCreateFunction:cluster=>L.divIcon({className:'comparison-pin-cluster',html:`<strong>${cluster.getChildCount()}</strong>`,iconSize:[36,36]})}).addTo(map);
  map.setMaxBounds(geometryLayer.getBounds().pad(.5));
  $('#comparison-map-district').innerHTML='<option value="all">All Sri Lanka</option>'+[...districts.keys()].sort().map(name=>`<option>${esc(name)}</option>`).join('');
- function fit(){const layer=layers.get(district);map.fitBounds((layer||geometryLayer).getBounds(),{padding:[30,30],maxZoom:12,animate:false});}
+ map.on('dragstart',()=>{manualView=true;});
+ $('#comparison-map').addEventListener('wheel',()=>{manualView=true;},{passive:true});
+ $('#comparison-map').addEventListener('dblclick',()=>{manualView=true;});
+ $('#comparison-map').addEventListener('click',event=>{if(event.target.closest('.leaflet-control-zoom'))manualView=true;},true);
+ function fit(){manualView=false;const layer=layers.get(district);map.fitBounds((layer||geometryLayer).getBounds(),{padding:[30,30],maxZoom:12,animate:false});}
  function chooseDistrict(name){district=name;$('#comparison-map-district').value=name;render();fit();}
  const sum=row=>[...selected].reduce((n,id)=>n+row[id],0);
  function popup(row){return `<strong>${esc(row.district)}</strong><br /><small>Report appendix · district counts</small><dl class="map-count-facts">${[...selected].map(id=>`<dt>${esc(banks[id].name)}</dt><dd>${fmt(row[id])}</dd>`).join('')}</dl><small>District aggregate, not a branch position.</small>`;}
@@ -40,17 +44,17 @@ export async function setupComparisonMap(data){
   $('#comparison-map-summary').textContent=mode==='districts'?`${district==='all'?'All 25 districts':district} · ${fmt(rows.reduce((n,row)=>n+sum(row),0))} selected-bank branches (appendix)`:`${district==='all'?'All Sri Lanka':district} · ${fmt(pins.length)} directory branch pins · incomplete reference coverage`;
   $('#comparison-map-key').innerHTML=[...selected].map(id=>`<span><i style="background:${banks[id].color}"></i>${esc(banks[id].name)}</span>`).join('')+`<small>${mode==='districts'?'Darker fill = more selected-bank branches':'Pins = source-published locations; grouped numbers = nearby pins'}</small>`;
  }
- $('#map-bank-buttons').addEventListener('click',event=>{const button=event.target.closest('[data-map-bank]');if(!button)return;const id=button.dataset.mapBank;if(id==='all'){selected.clear();ids.forEach(key=>selected.add(key));}else if(selected.has(id)){if(selected.size===1)return;selected.delete(id);}else selected.add(id);render();});
+ $('#map-bank-buttons').addEventListener('click',event=>{const button=event.target.closest('[data-map-bank]');if(!button)return;const id=button.dataset.mapBank;if(id==='all'){selected.clear();ids.forEach(key=>selected.add(key));}else{selected.clear();selected.add(id);}render();});
  $('#comparison-map-mode').addEventListener('change',event=>{mode=event.target.value;render();});
  $('#comparison-map-district').addEventListener('change',event=>chooseDistrict(event.target.value));
  $('#comparison-map-fit').addEventListener('click',fit);
  $('#comparison-streets').addEventListener('click',()=>{streets=!streets;background.setVisible(streets);$('#comparison-streets').textContent=`Street map: ${streets?'on':'off'}`;$('#comparison-streets').setAttribute('aria-pressed',String(streets));$('#comparison-street-status').textContent=streets?'OpenStreetMap · Internet required':'Clean district map';render();});
- async function present(show){if(presenting===show)return;const center=map.getCenter(),zoom=map.getZoom();presenting=show;$('#bank-map-section').classList.toggle('comparison-map-presenting',show);document.body.classList.toggle('comparison-map-fullscreen',show);$('#comparison-map-present').hidden=show;$('#comparison-map-exit').hidden=!show;$('#comparison-map-present').setAttribute('aria-pressed',String(show));
+ async function present(show){if(presenting===show)return;const center=map.getCenter(),zoom=map.getZoom(),keepView=manualView;presenting=show;$('#bank-map-section').classList.toggle('comparison-map-presenting',show);document.body.classList.toggle('comparison-map-fullscreen',show);$('#comparison-map-present').hidden=show;$('#comparison-map-exit').hidden=!show;$('#comparison-map-present').setAttribute('aria-pressed',String(show));
   if(show){previousScroll=window.scrollY;previousFocus=document.activeElement;try{await document.documentElement.requestFullscreen?.();}catch{}$('#comparison-map-exit').focus({preventScroll:true});}else{try{if(document.fullscreenElement)await document.exitFullscreen();}catch{}window.scrollTo({top:previousScroll,behavior:'instant'});previousFocus?.focus({preventScroll:true});}
-  requestAnimationFrame(()=>{map.invalidateSize({pan:false});map.setView(center,zoom,{animate:false});});
+  requestAnimationFrame(()=>{map.invalidateSize({pan:false});if(keepView){manualView=true;map.setView(center,zoom,{animate:false});}else fit();});
  }
  $('#comparison-map-present').addEventListener('click',()=>present(true));$('#comparison-map-exit').addEventListener('click',()=>present(false));
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&presenting)present(false);});document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&presenting)present(false);});
- let lastSize=null;new ResizeObserver(()=>{const current=map.getSize();map.invalidateSize({pan:false});if(!lastSize)fit();lastSize=current;}).observe($('#comparison-map'));
+ let lastSize=null;new ResizeObserver(()=>{const current=map.getSize();map.invalidateSize({pan:false});if(!lastSize||!manualView)fit();lastSize=current;}).observe($('#comparison-map'));
  render();fit();
 }
