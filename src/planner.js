@@ -98,9 +98,14 @@ function plotRows() {
 
 function setYear(year) {
 
+  map.stop();
+  const center=map.getCenter(), zoom=map.getZoom();
+  // Phase changes replace the data, while the presenter keeps the same view.
+  manualView=true;
   state.year=year;state.layers=new Set(years.filter(y=>y<=year));
 
-  render();fit();
+  render();
+  map.setView(center,zoom,{animate:false});
 
 }
 
