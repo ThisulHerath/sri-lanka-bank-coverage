@@ -131,3 +131,7 @@ Confidential data belongs in `private/expansion-plan.json`, which is ignored by 
 Proposed positions are settlement/catchment candidates with public coordinate references, not approved premises or merchant agreements. Statutory counts and public-directory pins remain separately labelled where the source documents do not provide an exact branch roster. Source discrepancies and model assumptions are visible in the review dialog.
 
 Hosted presenter access: open `/planner.html` and enter the password held in the ignored `private/presenter-password.txt`. Refreshing locks the hosted plan. Do not commit the password or plaintext plan.
+
+## Report-based visual comparison
+
+The main page now presents the supplied report’s domestic physical branch benchmark and a separate 25-district visual appendix. The statutory headline and appendix scopes are labelled separately where they disagree. Report data is held in ignored `private/comparison-data.json`; `assets/comparison.enc.json` is an encrypted package using the existing presenter password. No plaintext report data belongs in public source files. The earlier CBSL comparison and imported public location directory remain separately accessible at `/directory.html`, with their original dates and scope. The report aggregates do not revise or verify branch coordinates.

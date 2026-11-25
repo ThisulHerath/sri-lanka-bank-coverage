@@ -10,7 +10,7 @@ try {
   await stat(path.join(output, 'private'));
   throw new Error('Refusing to build: dist/private exists. Remove confidential data from the deployment output first.');
 } catch (error) { if (error.code !== 'ENOENT') throw error; }
-for (const entry of ['index.html', 'planner.html', 'src', 'vendor', 'assets']) {
+for (const entry of ['index.html', 'directory.html', 'planner.html', 'src', 'vendor', 'assets']) {
   await cp(path.join(root, entry), path.join(output, entry), { recursive: true });
 }
 console.log('Built static frontend in dist/');
