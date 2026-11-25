@@ -1,0 +1,3 @@
+# Never upload local planning inputs, including through the Vercel CLI.
+private/
+**/*.docx

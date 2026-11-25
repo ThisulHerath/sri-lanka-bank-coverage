@@ -119,3 +119,13 @@ Run `npm run check` after any update. It checks unique IDs, all 25 district feat
 ## Next implementation stages
 
 Complete BOC coordinate enrichment and verify source position quality before treating the map as a complete geographic comparison. Coverage radii, defensible gap analysis and proposed branch locations can follow once the underlying data supports them.
+
+## Confidential local expansion planning
+
+Open `/planner.html` on the local development server for the separate planning presentation. It supports cumulative year layers, branch/agency/pawn format filters, district and town navigation, a year comparison, a district ledger, site evidence and full-screen presentation. Competitor directory data is unchanged.
+
+Confidential data belongs in `private/expansion-plan.json`, which is ignored by Git and excluded from the static deployment build. `.vercelignore` also excludes the private directory and Word inputs from CLI uploads. The planning page reads that file only on localhost, or accepts a local JSON file into session memory. It blocks loading confidential plans on a remote host. Its Content Security Policy blocks external scripts, fonts, tiles and network connections; it uses local boundaries and no external map service. There are no uploads, analytics or browser-storage persistence for the plan. Do not move private files into `assets/` or `src/`.
+
+`npm run check` validates the private plan when present, including source coordinates, phase totals, adjusted district quotas and upgrade relationships. The build refuses a pre-existing `dist/private` directory. The public build contains only the generic planning interface and public directory assets. No sensitive Word document, extracted content, plan quantities or candidate allocations belong in Git or a deployment artifact.
+
+Proposed positions are settlement/catchment candidates with public coordinate references, not approved premises or merchant agreements. Statutory counts and public-directory pins remain separately labelled where the source documents do not provide an exact branch roster. Source discrepancies and model assumptions are visible in the review dialog.
