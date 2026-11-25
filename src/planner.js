@@ -227,7 +227,27 @@ function renderLedger() {
 
 }
 
-function render() {renderControls();renderMetrics();renderList();renderMap();renderAnnual();renderLedger();}
+let additionsPage=0;
+const additionsPageSize=50;
+function renderAdditions() {
+  const matchMap=$('#additions-scope').value==='map';
+  const rows=plan.sites.filter(row=>state.channels.has(row.channel) && (state.district==='all'||row.district===state.district) && `${row.name} ${row.town} ${row.district}`.toLowerCase().includes(state.query) && (!matchMap || (row.year<=state.year && state.layers.has(row.year))))
+    .sort((a,b)=>a.year-b.year||a.district.localeCompare(b.district)||a.channel.localeCompare(b.channel)||a.name.localeCompare(b.name));
+  const pages=Math.max(1,Math.ceil(rows.length/additionsPageSize));
+  additionsPage=Math.min(additionsPage,pages-1);
+  const start=additionsPage*additionsPageSize;
+  const labels={branch:'Branch',agency:'Agency candidate',pawn:'Pawn service'};
+  $('#additions-summary').textContent=`${number(rows.length)} planned service records · ${Object.entries(labels).map(([key,label])=>`${number(rows.filter(r=>r.channel===key).length)} ${label.toLowerCase()}`).join(' · ')}. ${matchMap?'Matches map year and layers.':'All planned phases.'} District, format and town filters apply; baseline branches are excluded.`;
+  $('#additions-rows').innerHTML=rows.length?rows.slice(start,start+additionsPageSize).map(row=>`<tr><td><strong>${row.year}</strong><span class="source-difference">${phases[row.year].name}</span></td><td>${labels[row.channel]}</td><td>${esc(row.district)}</td><td><button data-reference-site="${esc(row.id)}">${esc(row.town||row.name)}</button><small>${esc(row.name)}</small></td><td>${row.lat.toFixed(5)}, ${row.lng.toFixed(5)}</td><td>${esc(row.status)}${row.upgradesFrom?'<small>Upgrade at existing pawn candidate; one physical location.</small>':''}${row.reviewFlags?.length?`<small>${row.reviewFlags.map(esc).join(' ')}</small>`:''}</td></tr>`).join(''):'<tr><td colspan="6">No planned additions match these filters.</td></tr>';
+  $('#additions-page').textContent=rows.length?`${start+1}–${Math.min(start+additionsPageSize,rows.length)} of ${number(rows.length)} · Page ${additionsPage+1} / ${pages}`:'No matching records';
+  $('#additions-previous').disabled=additionsPage===0;
+  $('#additions-next').disabled=additionsPage>=pages-1;
+}
+$('#additions-scope').addEventListener('change',()=>{additionsPage=0;renderAdditions();});
+$('#additions-previous').addEventListener('click',()=>{additionsPage--;renderAdditions();});
+$('#additions-next').addEventListener('click',()=>{additionsPage++;renderAdditions();});
+document.addEventListener('click',event=>{const button=event.target.closest('[data-reference-site]');if(button){selectSite(button.dataset.referenceSite);$('#site-inspector').scrollIntoView({block:'start',behavior:'smooth'});}});
+function render() {renderControls();renderMetrics();renderList();renderMap();renderAnnual();renderLedger();additionsPage=0;renderAdditions();}
 
 function fit() {
 
