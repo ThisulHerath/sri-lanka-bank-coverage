@@ -1,8 +1,9 @@
+import { setupComparisonMap } from './comparison-map.js';
 import { banks } from './data.js';
 const $=s=>document.querySelector(s), ids=['com','boc','pb'];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>Number(v).toLocaleString('en-LK');
-let data;
+let data,comparisonMapReady=false;
 function validate(value){
   if(value.version!==1||value.districts?.length!==25||new Set(value.districts.map(r=>r.district)).size!==25)throw Error('Invalid comparison dataset');
   for(const id of ids){if(!Number.isInteger(value.baseline[id])||value.baseline[id]<0)throw Error('Invalid baseline');if(value.districts.some(r=>!Number.isInteger(r[id])||r[id]<0)||value.districts.reduce((n,r)=>n+r[id],0)!==value.districtTotals[id])throw Error('District count mismatch');}
@@ -27,10 +28,12 @@ function load(value){
  $('#district-source').textContent=`Source: supplied board report · ${data.districtSource}. Appendix totals: ${ids.map(id=>`${banks[id].short} ${fmt(data.districtTotals[id])}`).join(' · ')}.`;
  $('#comparison-legend').innerHTML=ids.map(id=>`<span><i style="background:${banks[id].color}"></i>${esc(banks[id].name)}</span>`).join('');
  renderDistricts();
+ if(!comparisonMapReady){comparisonMapReady=true;setupComparisonMap(data).catch(()=>{const error=$('#comparison-map-error');error.hidden=false;error.textContent='The map could not load. Refresh the page to try again; district charts remain available.';});}
 }
+$('#reset-comparison').addEventListener('click',()=>{$('#comparison-search').value='';$('#comparison-sort').value='az';renderDistricts();});
 $('#comparison-search').addEventListener('input',renderDistricts);$('#comparison-sort').addEventListener('change',renderDistricts);
 $('#comparison-unlock').addEventListener('submit',async event=>{
- event.preventDefault();const button=event.currentTarget.querySelector('button');button.disabled=true;$('#comparison-status').textContent='Unlocking comparison…';
+ event.preventDefault();const button=event.currentTarget.querySelector('button[type="submit"],button:not([type])');button.disabled=true;$('#comparison-status').textContent='Unlocking comparison…';
  try{const response=await fetch('/assets/comparison.enc.json');if(!response.ok)throw Error('Unavailable');const sealed=await response.json();if(sealed.version!==1||sealed.iterations!==600000)throw Error('Invalid package');
  const bytes=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const password=$('#comparison-password').value;$('#comparison-password').value='';
  const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);

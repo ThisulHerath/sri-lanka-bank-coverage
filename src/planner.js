@@ -129,13 +129,14 @@ function renderMetrics() {
 
   $('#plan-metrics').innerHTML=metrics.map(([label,value,note,color])=>`<article class="plan-metric" style="--metric-color:${color}"><span>${label}</span><strong>${value}</strong><small>${note}</small></article>`).join('');
 
+  $('#presentation-year').value=String(state.year);
   $('#year-heading').textContent=`${state.year} · ${phases[state.year].name}`;
 
   $('#map-stage-label').textContent=state.district==='all'?'Sri Lanka · 25 districts':state.district;
 
   $('#baseline-note').textContent=`${number(plan.baselineReported)} reported branches; ${number(plan.baselineLocations.length)} public directory reference pins. The documents do not identify the records required to reconcile that difference.`;
 
-  $('#presentation-stage').textContent=`${state.year} · ${phases[state.year].name} · ${state.district==='all'?'Sri Lanka':state.district}`;
+  $('#presentation-stage').textContent=state.district==='all'?'Sri Lanka · Network expansion':state.district;
 
   $('#presentation-plan-counts').textContent=`Reported network: ${number(totals.branch)} branches · ${number(totals.agency)} agency candidates · ${number(totals.pawn)} pawn services`;
 
@@ -287,8 +288,12 @@ function selectSite(id) {
 
   $('#site-inspector').innerHTML=`<p class="eyebrow">LOCATION & SITING EVIDENCE</p><h3>${esc(row.name)}</h3><div class="inspector-badges"><span>${row.year} · ${phases[row.year].name}</span><span>${esc(row.district)}</span><span>${esc(row.status)}</span></div><dl class="site-facts"><dt>Coordinate status</dt><dd>${pointLabel}${row.year>2026?' · proposed premises not approved':''}</dd><dt>Coordinates</dt><dd>${row.lat.toFixed(6)}, ${row.lng.toFixed(6)}</dd><dt>Source reference</dt><dd>${esc(row.coordinateSource)}</dd><dt>Selection basis</dt><dd>${esc(row.provenance)}</dd>${row.nearestBranch?`<dt>Nearest branch / hub</dt><dd>${esc(row.nearestBranch.name)} · ${row.nearestBranch.km} km straight-line. Operational hub and road route require validation.</dd>`:''}${row.alternatives?`<dt>Source alternatives</dt><dd>${esc(row.alternatives)}</dd>`:''}${row.upgradesFrom?'<dt>Upgrade relationship</dt><dd>Reuses the 2027 pawn location. Pawning remains an integrated service, not a second building.</dd>':''}${row.address?`<dt>Directory address</dt><dd>${esc(row.address)}</dd>`:''}</dl>${row.reviewFlags?.length?`<p class="site-review-note">${row.reviewFlags.map(esc).join('<br />')}</p>`:''}<button id="focus-plan-site" class="button secondary">Focus this location</button>`;
 
+  $('#plan-location-dialog').showModal();
   $('#focus-plan-site').addEventListener('click',()=>{
+    $('#plan-location-dialog').close();
 
+    if(row.year>state.year)setYear(row.year);
+    state.channels.add(row.channel);state.layers.add(row.year);render();
     const marker=markers.get(id);if(!marker)return;
 
     manualView=true;
@@ -351,13 +356,14 @@ async function showPresentation(show) {
 
   if (presenting===show)return;
 
+  const previousCenter=map.getCenter(),previousZoom=map.getZoom(),keepView=manualView;
   presenting=show;document.body.classList.toggle('plan-presentation',show);$('#present-plan').setAttribute('aria-pressed',String(show));
 
   if(show){previousScroll=scrollY;try{await document.documentElement.requestFullscreen?.();}catch{/* CSS viewport presentation works when native fullscreen is unavailable. */}$('#exit-plan-presentation').focus({preventScroll:true});}
 
   else{try{if(document.fullscreenElement)await document.exitFullscreen();}catch{/* Layout already restored. */}window.scrollTo({top:previousScroll,behavior:'instant'});$('#present-plan').focus({preventScroll:true});}
 
-  requestAnimationFrame(()=>{map.invalidateSize({animate:false});fit();});
+  requestAnimationFrame(()=>{map.invalidateSize({pan:false,animate:false});if(keepView){manualView=true;map.setView(previousCenter,previousZoom,{animate:false});}else fit();});
 
 }
 
@@ -389,7 +395,7 @@ async function loadPlan(data) {
 
   setFilterPanel(false);render();fit();
 
-  $('#plan-status').textContent='Confidential plan loaded locally. Proposed locations remain candidates pending branch-roster reconciliation, merchant selection and premises due diligence. Planning records stay local. If enabled, the street map requests visible map tiles from OpenStreetMap; confidential records are not included.';
+  $('#plan-status').textContent='Plan ready. Proposed locations are candidates for review. Use Source notes for assumptions and unresolved figures.';
 
   $('#plan-status').classList.remove('error');
 
@@ -421,6 +427,11 @@ $('#plan-clusters').addEventListener('change',e=>{state.cluster=e.target.checked
 
 $('#plan-coverage').addEventListener('change',e=>{state.coverage=e.target.checked;renderMap();});
 
+$('#close-plan-location').addEventListener('click',()=>$('#plan-location-dialog').close());
+$('#presentation-year').addEventListener('change',event=>setYear(Number(event.target.value)));
+$('[data-start-plan]').addEventListener('click',()=>showPresentation(true));
+$('#reset-plan-filters').addEventListener('click',()=>{state.channels=new Set(Object.keys(formats));state.layers=new Set(years.filter(y=>y<=state.year));state.district='all';state.query='';state.coverage=false;$('#plan-district').value='all';$('#plan-search').value='';$('#plan-coverage').checked=false;render();fit();});
+document.addEventListener('keydown',event=>{if(!presenting||event.target.closest('input,select,textarea,button')||document.querySelector('dialog[open]'))return;if(event.key==='ArrowRight'){event.preventDefault();setYear(Math.min(2029,state.year+1));}if(event.key==='ArrowLeft'){event.preventDefault();setYear(Math.max(2026,state.year-1));}});
 $('#fit-plan').addEventListener('click',fit);$('#present-plan').addEventListener('click',()=>showPresentation(true));$('#exit-plan-presentation').addEventListener('click',()=>showPresentation(false));
 
 $('#previous-plan-year').addEventListener('click',()=>setYear(Math.max(2026,state.year-1)));$('#next-plan-year').addEventListener('click',()=>setYear(Math.min(2029,state.year+1)));
@@ -431,7 +442,7 @@ matchMedia('(max-width:1000px)').addEventListener('change',()=>setFilterPanel(fa
 
 $('#review-plan').addEventListener('click',()=>$('#plan-review-dialog').showModal());$('#close-plan-review').addEventListener('click',()=>$('#plan-review-dialog').close());
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&presenting&&!$('#plan-review-dialog').open)showPresentation(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&presenting&&!document.querySelector('dialog[open]'))showPresentation(false);});
 
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&presenting)showPresentation(false);});
 
@@ -452,7 +463,7 @@ function showHostedUnlock() {
 }
 $('#presenter-unlock').addEventListener('submit',async event=>{
   event.preventDefault();
-  const button=event.currentTarget.querySelector('button');button.disabled=true;
+  const button=event.currentTarget.querySelector('button[type="submit"],button:not([type])');button.disabled=true;
   $('#unlock-status').textContent='Unlocking plan…';
   try {
     const response=await fetch('/assets/presenter-plan.enc.json');
@@ -468,7 +479,7 @@ $('#presenter-unlock').addEventListener('submit',async event=>{
     await loadPlan(JSON.parse(new TextDecoder().decode(content)));
     $('#presenter-unlock').hidden=true;
     $('#unlock-status').textContent='';
-    $('#plan-status').textContent='Confidential plan unlocked in this browser. Refreshing or closing the page locks it again. Optional street tiles request viewed map areas only; planning records are not sent.';
+    $('#plan-status').textContent='Plan unlocked. Choose a year below to begin. Refreshing or closing this page locks the plan again.';
   } catch(error) {$('#unlock-status').textContent='Unable to unlock. Check the presenter password and try again.';}
   finally {button.disabled=false;}
 });
