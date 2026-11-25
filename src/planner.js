@@ -409,7 +409,7 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 
 $('#plan-file').addEventListener('change',async event=>{
 
-  if(!local)return;
+
 
   const file=event.target.files?.[0];if(!file)return;
 
@@ -417,12 +417,35 @@ $('#plan-file').addEventListener('change',async event=>{
 
 });
 
-if(!local){$('#plan-file').disabled=true;$('#plan-status').textContent='Confidential data loading is available only on localhost. Open the local project to review a plan; deployment builds exclude the private dataset.';}
 
-else{
-
-  try{const response=await fetch('/private/expansion-plan.json',{cache:'no-store'});if(!response.ok)throw new Error('No local plan is loaded. Choose a confidential JSON planning file; it stays in this browser session.');await loadPlan(await response.json());}
-
-  catch(error){$('#plan-status').textContent=error.message;$('#plan-status').classList.add('error');}
-
+function showHostedUnlock() {
+  $('#presenter-unlock').hidden=false;
+  $('#plan-status').textContent='The hosted expansion plan is encrypted. Unlock it with your presenter password, or load your private planning file.';
+}
+$('#presenter-unlock').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const button=event.currentTarget.querySelector('button');button.disabled=true;
+  $('#unlock-status').textContent='Unlocking plan…';
+  try {
+    const response=await fetch('/assets/presenter-plan.enc.json');
+    if(!response.ok)throw new Error('Encrypted plan unavailable.');
+    const sealed=await response.json();
+    const bytes=value=>Uint8Array.from(atob(value),c=>c.charCodeAt(0));
+    if(sealed.version!==1||sealed.iterations!==600000)throw new Error('Unsupported plan package.');
+    const password=$('#presenter-password').value;
+    $('#presenter-password').value='';
+    const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:bytes(sealed.salt),iterations:sealed.iterations,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['decrypt']);
+    const content=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(sealed.iv)},key,bytes(sealed.ciphertext));
+    await loadPlan(JSON.parse(new TextDecoder().decode(content)));
+    $('#presenter-unlock').hidden=true;
+    $('#unlock-status').textContent='';
+    $('#plan-status').textContent='Confidential plan unlocked in this browser. Refreshing or closing the page locks it again. Optional street tiles request viewed map areas only; planning records are not sent.';
+  } catch(error) {$('#unlock-status').textContent='Unable to unlock. Check the presenter password and try again.';}
+  finally {button.disabled=false;}
+});
+if(!local)showHostedUnlock();
+else {
+  try{const response=await fetch('/private/expansion-plan.json',{cache:'no-store'});if(!response.ok)throw new Error('No local plan loaded.');await loadPlan(await response.json());}
+  catch(error){showHostedUnlock();}
 }
