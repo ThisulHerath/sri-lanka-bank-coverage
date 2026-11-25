@@ -8,7 +8,11 @@ export function setupMapBackground(map, geography, statusSelector = '#street-map
 
   const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
-    maxZoom:19, bounds, noWrap:true, keepBuffer:1,
+    maxZoom:19, bounds, noWrap:true, keepBuffer:0,
+    // OSM requires an identifying Referer. Send only the site origin, never
+    // the confidential planner path or query parameters.
+    referrerPolicy:'origin', updateWhenIdle:true, updateWhenZooming:false,
+    updateInterval:500,
 
     attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
 
