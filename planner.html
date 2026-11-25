@@ -1,54 +1,111 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
   <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" />
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; font-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" />
+
   <title>Confidential network planning · Commercial Bank</title>
+
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
   <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+
   <link rel="stylesheet" href="/vendor/leaflet-markercluster/MarkerCluster.css" />
+
   <link rel="stylesheet" href="/src/planner.css" />
+
   <script defer src="/vendor/leaflet/leaflet.js"></script>
+
   <script defer src="/vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
+
   <script type="module" src="/src/planner.js"></script>
+
+  <link rel="stylesheet" href="/src/shared-navigation.css" />
+
 </head>
+
 <body>
+
+<aside class="planner-sidebar"><a class="shared-brand" href="/">CB <span>COMMERCIAL BANK<small>NETWORK INTELLIGENCE</small></span></a><div class="shared-nav-heading">WORKSPACE</div><nav class="shared-navigation" aria-label="Workspace navigation"><a href="/" data-page="comparison"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10h4v10M10 20V4h4v16M16 20V7h4v13"/></svg><span>Bank comparison</span></a><a href="/planner.html" data-page="planner" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg><span>Expansion planner</span></a></nav><p class="shared-nav-foot">Sri Lanka<br />Network strategy workspace</p></aside>
+
   <a class="skip-link" href="#planning-main">Skip to planning map</a>
+
   <header class="planning-header"><a href="/" class="planner-brand"><span class="planner-monogram">CB</span><span>COMMERCIAL BANK<small>NETWORK PLANNING</small></span></a><div class="privacy-label">CONFIDENTIAL · LOCAL WORKING DRAFT</div></header>
+
   <main id="planning-main">
+
     <section class="planning-title"><div><p class="eyebrow">RETAIL NETWORK DEVELOPMENT</p><h1>One network. Four years.</h1><p>Compare the baseline and three cumulative expansion phases across Sri Lanka.</p></div><div class="title-actions"><button id="review-plan" class="button secondary" disabled>Source & location review</button><label class="button secondary import-label">Load local plan<input id="plan-file" type="file" accept=".json,application/json" /></label></div></section>
-    <nav aria-label="Workspace navigation"><a class="button secondary" href="/" style="text-decoration:none">Bank comparison</a></nav>
+
+
+
     <p id="plan-status" class="plan-status" role="status">Loading local planning data…</p>
+
     <section id="planning-workspace" hidden>
+
       <div class="year-navigation"><div><span class="eyebrow">CUMULATIVE NETWORK</span><h2 id="year-heading">2026 baseline</h2></div><div id="year-options" class="year-options" role="group" aria-label="Planning year"></div></div>
+
       <div id="plan-metrics" class="plan-metrics" aria-live="polite"></div>
+
       <div class="baseline-note"><strong>Reported baseline and location register</strong><span id="baseline-note"></span><button class="text-button" data-review>Review reconciliation</button></div>
+
       <section class="planning-map-panel" aria-label="Phased network map">
+
         <aside class="planning-controls" id="planning-controls">
+
           <div class="control-heading"><h3>Map layers</h3><button id="close-plan-filters" class="button secondary">Show map</button></div>
+
           <fieldset><legend>Rollout layers</legend><div id="phase-layers"></div></fieldset>
+
           <fieldset><legend>Network formats</legend><div id="channel-layers"></div></fieldset>
+
           <label class="field-label" for="plan-district">District</label><select id="plan-district"><option value="all">All 25 districts</option></select>
+
           <label class="field-label" for="plan-search">Find a town or location</label><input id="plan-search" type="search" placeholder="Search the network" autocomplete="off" />
+
           <label class="option-label"><input id="plan-clusters" type="checkbox" checked />Group nearby locations</label>
+
           <label class="option-label"><input id="plan-coverage" type="checkbox" />Shade settlement proximity</label>
+
           <p class="control-note">Only branches, agency candidates and pawn services are plotted. Proposed markers identify settlement or catchment anchors, not approved premises.</p>
+
           <div class="location-list-heading"><h3>Locations in view</h3><span id="plan-list-count"></span></div><div id="plan-site-list" class="plan-site-list"></div>
+
         </aside>
+
         <div class="planning-map-area">
-          <div class="map-action-bar"><button id="plan-filters" class="button secondary" aria-expanded="false" aria-controls="planning-controls">Layers & locations</button><strong id="map-stage-label"></strong><div><button id="fit-plan" class="button secondary">Fit selection</button><button id="present-plan" class="button primary" aria-pressed="false">Present map</button></div></div>
-          <div id="plan-presentation-bar"><div><small>CONFIDENTIAL · COMMERCIAL BANK</small><strong id="presentation-stage"></strong><span id="presentation-plan-counts"></span></div><div><button id="previous-plan-year" class="button secondary">Previous year</button><button id="next-plan-year" class="button secondary">Next year</button><button id="exit-plan-presentation" class="button primary">Exit presentation</button></div></div>
-          <div class="plan-map-canvas"><div id="plan-map" role="region" aria-label="Sri Lanka phased network planning map"></div><div class="planning-legend"><strong>Rollout year</strong><div id="phase-key"></div><strong>Format</strong><span><i class="key-branch"></i>Branch <i class="key-agency"></i>Agency <i class="key-pawn"></i>Pawn</span><small>Candidate anchors require premises validation.<br />Map is local; no street tiles or location searches are sent.</small></div><div id="map-view-summary" class="map-view-summary" aria-live="polite"></div></div>
+
+          <div class="map-action-bar"><button id="plan-filters" class="button secondary" aria-expanded="false" aria-controls="planning-controls">Layers & locations</button><strong id="map-stage-label"></strong><div><button class="button secondary" data-street-toggle aria-pressed="false">Street map: off</button><button id="fit-plan" class="button secondary">Fit selection</button><button id="present-plan" class="button primary" aria-pressed="false">Present map</button></div></div>
+
+          <div id="plan-presentation-bar"><div><small>CONFIDENTIAL · COMMERCIAL BANK</small><strong id="presentation-stage"></strong><span id="presentation-plan-counts"></span></div><div><button class="button secondary" data-street-toggle aria-pressed="false">Street map: off</button><button id="previous-plan-year" class="button secondary">Previous year</button><button id="next-plan-year" class="button secondary">Next year</button><button id="exit-plan-presentation" class="button primary">Exit presentation</button></div></div>
+
+          <div class="plan-map-canvas"><div id="plan-map" role="region" aria-label="Sri Lanka phased network planning map"></div><div class="planning-legend"><strong>Rollout year</strong><div id="phase-key"></div><strong>Format</strong><span><i class="key-branch"></i>Branch <i class="key-agency"></i>Agency <i class="key-pawn"></i>Pawn</span><small>Candidate anchors require premises validation.<br /><span id="plan-street-status">Clean district map · Street map is off</span></small></div><div id="map-view-summary" class="map-view-summary" aria-live="polite"></div></div>
+
         </div>
+
       </section>
+
       <section class="site-inspector" id="site-inspector" aria-live="polite"><p>Select a location for coordinates, evidence, hub proximity and review notes.</p></section>
+
       <section class="comparison-section"><div class="section-heading"><div><p class="eyebrow">YEAR BY YEAR</p><h2>Compare the network as it grows</h2><p>Each year includes all earlier phases. Agency and pawn baseline is zero.</p></div></div><div id="annual-comparison" class="annual-comparison"></div></section>
+
       <section class="comparison-section"><div class="section-heading"><div><p class="eyebrow">DISTRICT LEDGER</p><h2>Expansion across all 25 districts</h2><p>Zero branch additions are retained. Pawn towns follow their actual geographic district.</p></div></div><div class="ledger-scroll"><table><caption class="sr-only">Reported baseline and selected-year district network</caption><thead><tr><th scope="col">District</th><th scope="col">2026 branches<br />(report)</th><th scope="col">Branches through<br /><span id="ledger-year"></span></th><th scope="col">New branch<br />locations</th><th scope="col">Pawn services<br />(named towns)</th><th scope="col">Agency<br />candidates</th><th scope="col">Sampled settlements<br />within 10 km</th></tr></thead><tbody id="district-ledger"></tbody></table></div></section>
+
       <footer class="planning-footer"><strong>CONFIDENTIAL · Planning scenarios, not approved openings</strong><span>GeoNames CC BY 4.0 · geoBoundaries / OSM, ODbL · Proximity uses straight-line settlement samples, not population or road coverage.</span></footer>
+
     </section>
+
   </main>
+
   <dialog id="plan-review-dialog"><div class="review-heading"><div><p class="eyebrow">SOURCE & LOCATION REVIEW</p><h2>Items to resolve before approval</h2></div><button id="close-plan-review" class="button secondary">Close</button></div><div id="plan-review-content"></div></dialog>
+
 </body>
+
 </html>
